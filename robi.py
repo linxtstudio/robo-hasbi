@@ -37,12 +37,6 @@ async def code(ctx):
 
   message = ctx.channel
   await message.send(kode)
-    
-@bot.command()
-async def Jojo(ctx):
-    img = ["https://images3.alphacoders.com/755/thumb-1920-755384.png", "https://images5.alphacoders.com/433/thumb-1920-433569.jpg", "https://images6.alphacoders.com/833/thumb-1920-833684.png", "https://images4.alphacoders.com/828/thumb-1920-828658.png"]
-    message = ctx.channel
-    await message.send(random.choice(img))
 
 
 bot.run("NzI3ODY2MDUxNTU5MTYxOTM2.XvyHYg.vxxKbFe1QnCniBhNMkODispYla0")
