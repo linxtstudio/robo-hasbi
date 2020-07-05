@@ -6,13 +6,17 @@ Discord Bot For "Negara Juara Sengsara" that using Python(discord.py)
 __Needed Tools__
 
 ```
-[Python (Preferrably Python3.8)](https://www.python.org/downloads/)
+[Python](https://www.python.org/downloads/)
+[Text Editor](https://code.visualstudio.com/download)
 ```
 
 __Setup__
 
 ```
-pip install discord
+Step 1: Clone This Repository
+Step 2: Open Command Line Then Type "pip install -r requirements.txt"
+
+*If You Already Have A Basic Knowledge About Python Virtualenv. We Suggest You To Do Step 2 Inside A Virtualenv
 ```
 
 __Running Bot On Your Local Machine__
