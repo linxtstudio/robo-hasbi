@@ -1,9 +1,10 @@
 from discord.ext import commands
 from discord import Embed
+from discord.ext.commands.errors import CommandInvokeError
 import random
 from imgurpython import ImgurClient #python imgur api wrapper
 import praw #python reddit API wrapper
-from prawcore.exceptions import RequestException
+from prawcore.exceptions import Redirect, NotFound
 
 bot = commands.Bot('!') #prefix
 
@@ -37,7 +38,7 @@ async def ping(ctx):
 @commands.cooldown(1, 5)
 async def code(ctx):
   i = 0
-  kode: str
+  kode = ""
   while i < 6:
     if i == 0: kode += str(random.randint(1,2))
     else: kode += str(random.randint(0,9))
@@ -48,23 +49,41 @@ async def code(ctx):
 async def gambar(ctx, search_query = ""):
   if search_query != "":
     images = imgur_client.gallery_search(search_query, advanced=None, sort='viral', window='all', page=0)
-    embedVar = Embed(title=random.choice(images).title, url=random.choice(images).link)
-    embedVar.set_image(url=random.choice(images).link)
+    randomResult = random.choice(images)
+    embedVar = Embed(title=randomResult.title, url=randomResult.link)
+    embedVar.set_image(url=randomResult.link)
     await ctx.channel.send(embed = embedVar)
   else:
     await ctx.channel.send('Kesalahan Penggunan Command.\n > !gambar <keywordgambar>')
 
 @bot.command()
-async def reddit(ctx, search_query = ""):
-  if search_query != "":
-    try:      
-      for submission in reddit_client.subreddit(search_query).random_rising(limit = 1):
-        embedVar = Embed(title=submission.title, url=submission.url)
-        embedVar.set_image(url=submission.url)
-        await ctx.channel.send(embed = embedVar)
-    except RequestException:
-      await ctx.channel.send('Failed to fetch subreddit {}, retrying'.format(subreddit.title))
-  else:
-    await ctx.channel.send('Kesalahan Penggunan Command.\n > !reddit <namasubreddit>')
+async def reddit(ctx, subreddit_search = "", submission_search = "",*args):
+  try:
+    if subreddit_search != "":         
+      if submission_search != "":    
+        searchword = ""  
+        zero_result = True  
+        for n in args:          
+          searchword = searchword + " " + n
+        posts = reddit_client.subreddit(subreddit_search).search(submission_search+" "+searchword, limit=1)
+      else:
+        posts = reddit_client.subreddit(subreddit_search).random_rising(limit = 1)     
+      for submission in posts:    
+          zero_result = False
+          if submission.thumbnail:
+            embedVar = Embed(title=submission.title, url=submission.url)
+            embedVar.set_image(url=submission.url)
+          else:
+            embedVar = Embed(title=submission.title, url=submission.url)
+          await ctx.channel.send(embed = embedVar)
+          if not submission.thumbnail and not submission.selftext == '': await ctx.channel.send(f' >>> {deskripsi}') 
+      if zero_result:
+        await ctx.channel.send('Submission Gagal Ditemukan atau Tidak Tersedia')
+    else:
+      await ctx.channel.send('Kesalahan Penggunan Command.\n > !reddit <namasubreddit> <optional:submissionsearch')
+  except Redirect:
+    await ctx.channel.send('Subreddit Gagal Ditemukan atau Tidak Tersedia')
+  except NotFound:
+    await ctx.channel.send('Error Response 404')  
 
 bot.run("NzI3ODY2MDUxNTU5MTYxOTM2.XwAXCQ.TwvoeGhGG0o8CRV_BNX5zfE7qH0")
