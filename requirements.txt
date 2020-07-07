@@ -8,6 +8,7 @@ discord.py==1.3.3
 idna==2.10
 imgurpython==1.1.7
 multidict==4.7.6
+mysql-connector==2.2.9
 praw==7.1.0
 prawcore==1.4.0
 requests==2.24.0
