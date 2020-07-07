@@ -1,7 +1,7 @@
 import discord
 from discord import Embed
 from discord.ext import commands
-from discord.ext.commands.errors import *
+from discord.ext.commands import ExtensionError
 import random
 import os
 import robiconf
@@ -12,37 +12,32 @@ bot = BotInstance.bot #ngambil object bot dari robiconf
 @bot.command()
 async def load(ctx, extension):
   bot.load_extension(f'cogs.{extension}')
+  await ctx.message.add_reaction('👍')
+
+@load.error
+async def load_error(ctx, error):
+  await ctx.message.add_reaction('👎')
 
 @bot.command()
 async def unload(ctx, extension):
   bot.unload_extension(f'cogs.{extension}')
+  await ctx.message.add_reaction('👍')
+
+@unload.error
+async def unload_error(ctx, error):
+  await ctx.message.add_reaction('👎')
 
 @bot.command(aliases=['re'])
-async def refresh(ctx, extension):
-  bot.unload_extension(f'cogs.{extension}')
-  bot.load_extension(f'cogs.{extension}')
+async def reload(ctx, extension):
+  bot.reload_extension(f'cogs.{extension}')
+  await ctx.message.add_reaction('👍')
 
-@refresh.error
-async def load_error(ctx, error):
-  if isinstance(error, commands.CommandInvokeError):
-      bot.load_extension(f'cogs.{extension}')
-      await ctx.channel.send(f'Cogs {extension} Berhasil di Refresh')
-  if isinstance(error, commands.MissingRequiredArgument):
-    await ctx.channel.send('Kesalahan Penggunan Command.\n > !re <namacogs>')
-  raise error
-
-for filename in os.listdir('./cogs'):
-  if filename.endswith('.py'):
-    bot.load_extension(f'cogs.{filename[:-3]}')
+@reload.error
+async def reload_error(ctx, error):
+  await ctx.message.add_reaction('👎')
 
 @bot.event
 async def on_ready():
   print(f'{bot.user} has connected to Discord!')
-
-@bot.event   
-async def on_message(message):
-  if "!re" in str(message.content) or "!load" in str(message.content) or "!unload" in str(message.content):
-    await message.add_reaction('👍')
-  await bot.process_commands(message)
 
 bot.run(Token.token)
