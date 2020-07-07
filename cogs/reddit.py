@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import Embed
 import praw
-from prawcore.exceptions import Redirect, NotFound
+from prawcore import exceptions
 from robiconf.bot_configuration import RedditClient
 from discord.ext.commands.errors import CommandInvokeError
 
@@ -18,7 +18,7 @@ class Reddit(commands.Cog):
             searchword = ""                        
             for n in args:          
                 searchword = searchword + " " + n
-                posts = reddit_client.subreddit(subreddit_search).search(submission_search+" "+searchword, limit=1)
+            posts = reddit_client.subreddit(subreddit_search).search(submission_search+" "+searchword, limit=1)
         else:
             posts = reddit_client.subreddit(subreddit_search).random_rising(limit = 1)
     
@@ -40,7 +40,7 @@ class Reddit(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.channel.send('Kesalahan Penggunan Command.\n > !reddit <namasubreddit> <optional:submissionsearch>')        
 
-        if isinstance(error, commands.CommandInvokeError):
+        if isinstance(error, exceptions.Redirect):
             await ctx.channel.send('Subreddit Gagal Ditemukan atau Tidak Tersedia')
 
         raise error
