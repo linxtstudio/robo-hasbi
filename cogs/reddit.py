@@ -29,10 +29,10 @@ class Reddit(commands.Cog):
             embedVar.set_image(url=posts.url)
         else:
             embedVar = Embed(title=posts.title, url=posts.url)
+        
         embed_result = await ctx.channel.send(embed = embedVar)
-        if not posts.thumbnail and not posts.selftext == '': await ctx.channel.send(f' >>> {posts.selftext}')
+        if not posts.thumbnail and not posts.selftext == '': await ctx.channel.send(f' >>> {posts.selftext}')        
         await embed_result.add_reaction('❗')
-            
 
     @reddit.error
     async def reddit_error(self, ctx, error):
@@ -49,10 +49,9 @@ class Reddit(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):  
-
-        if reaction.emoji == '❗' and not user.nick == None:
+        if reaction.emoji == '❗' and not user.name == 'Robo-Hasbi' and reaction.message.author.name == 'Robo-Hasbi':
             await reaction.message.delete()
-        print(f'{user.nick} reacted {reaction.emoji} in {reaction.message}')
-
+        
+        
 def setup(bot):
     bot.add_cog(Reddit(bot))
