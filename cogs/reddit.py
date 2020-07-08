@@ -45,12 +45,7 @@ class Reddit(commands.Cog):
         if isinstance(error, CommandInvokeError):
             await ctx.channel.send('Submission Gagal Ditemukan atau Tidak Tersedia')
 
-        raise error
-
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):  
-        if reaction.emoji == '❗' and not user.name == 'Robo-Hasbi' and reaction.message.author.name == 'Robo-Hasbi':
-            await reaction.message.delete()
+        raise error    
         
         
 def setup(bot):
