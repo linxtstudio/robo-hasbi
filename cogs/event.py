@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-class Error(commands.Cog):
+class Event(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -15,5 +15,10 @@ class Error(commands.Cog):
 
         raise error
 
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):  
+        if reaction.emoji == '❗' and not user.name == 'Robo-Hasbi' and reaction.message.author.name == 'Robo-Hasbi':
+            await reaction.message.delete()
+
 def setup(bot):
-    bot.add_cog(Error(bot))
+    bot.add_cog(Event(bot))

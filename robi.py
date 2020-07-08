@@ -13,7 +13,6 @@ bot = BotInstance.bot #ngambil object bot dari robiconf
 async def load(ctx, extension):
   bot.load_extension(f'cogs.{extension}')
   await ctx.message.add_reaction('👍')
-
 @load.error
 async def load_error(ctx, error):
   await ctx.message.add_reaction('👎')
@@ -22,7 +21,6 @@ async def load_error(ctx, error):
 async def unload(ctx, extension):
   bot.unload_extension(f'cogs.{extension}')
   await ctx.message.add_reaction('👍')
-
 @unload.error
 async def unload_error(ctx, error):
   await ctx.message.add_reaction('👎')
@@ -31,10 +29,11 @@ async def unload_error(ctx, error):
 async def reload(ctx, extension):
   bot.reload_extension(f'cogs.{extension}')
   await ctx.message.add_reaction('👍')
-
 @reload.error
 async def reload_error(ctx, error):
   await ctx.message.add_reaction('👎')
+
+bot.load_extension('cogs.event')
 
 @bot.event
 async def on_ready():
