@@ -7,8 +7,18 @@ class Event(commands.Cog):
 
     @commands.Cog.listener() #Default error handler for a command, you can override it if you need a specific error handler
     async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):    
-            await ctx.channel.send('Cooldown boss, coba lagi setelah {:.2f}s'.format(error.retry_after)) 
+        if isinstance(error, commands.CommandOnCooldown):
+            cd = int(error.retry_after)
+            h = 0
+            m = 0
+            h = int(cd/3600)
+            cd = cd%3600
+            if cd != 0 and cd > 60:
+                m = int(cd/60)
+                cd = cd%60
+            
+            if str(ctx.command)  == 'daily': await ctx.channel.send('Anda sudah mengambil jatah hari ini, coba lagi setelah `{}h {}m {}s`'.format(h, m, cd)) 
+            else: await ctx.channel.send('Cooldown boss, coba lagi setelah {:.2f}s'.format(error.retry_after)) 
              
         if isinstance(error, commands.CommandNotFound):
             await ctx.channel.send('Gaada command itu, ketik !help untuk melihat daftar lengkap command')  

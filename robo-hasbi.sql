@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 07, 2020 at 08:39 AM
+-- Generation Time: Jul 09, 2020 at 10:41 AM
 -- Server version: 10.3.16-MariaDB
 -- PHP Version: 7.3.7
 
@@ -21,6 +21,26 @@ SET time_zone = "+00:00";
 --
 -- Database: `robo-hasbi`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `currency`
+--
+
+CREATE TABLE `currency` (
+  `idProfil` varchar(255) DEFAULT NULL,
+  `ballance` bigint(255) DEFAULT NULL,
+  `bank` int(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `currency`
+--
+
+INSERT INTO `currency` (`idProfil`, `ballance`, `bank`) VALUES
+('610040230430375947', 100, 394),
+('394395014572146688', 0, 423);
 
 -- --------------------------------------------------------
 
@@ -48,10 +68,26 @@ INSERT INTO `data` (`id`, `name`) VALUES
 --
 
 --
+-- Indexes for table `currency`
+--
+ALTER TABLE `currency`
+  ADD KEY `idProfil` (`idProfil`);
+
+--
 -- Indexes for table `data`
 --
 ALTER TABLE `data`
   ADD PRIMARY KEY (`id`) USING BTREE;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `currency`
+--
+ALTER TABLE `currency`
+  ADD CONSTRAINT `idProfil` FOREIGN KEY (`idProfil`) REFERENCES `data` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
