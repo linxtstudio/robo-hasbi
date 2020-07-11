@@ -11,7 +11,6 @@ class Reddit(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=['r'])
-    @commands.cooldown(1, 5)
     async def reddit(self, ctx, subreddit_search, *, submission_search=""):        
         reddit_client = RedditClient.reddit_client           
         if submission_search != "":           
@@ -29,21 +28,10 @@ class Reddit(commands.Cog):
         else:
             if posts.selftext != '' and len(str(posts.selftext)) <= 1024:
                 embedVar.add_field(name=f'Post by /u/{posts.author}', value=posts.selftext)
+
         embedVar.set_footer(text=f'👍 {posts.ups} | 👎 {posts.downs}')
         embed_result = await ctx.channel.send(embed = embedVar)                
-        await embed_result.add_reaction('❗')
-        await embed_result.add_reaction('🔄')
-        embed_result.reactions.append('🔄')
-        def check(reaction, user):
-            return reaction.emoji == '🔄' and user.name != 'Robo-Hasbi'
-        try:
-            research = await bot.wait_for('reaction_add', check=check, timeout=5.0)
-            if research and '🔄' in embed_result.reactions:
-                await embed_result.delete()
-                await ctx.invoke(bot.get_command('reddit'), subreddit_search=str(subreddit_search), submission_search=str(submission_search))
-        except asyncio.TimeoutError:
-            await embed_result.clear_reaction('🔄')
-        
+        await embed_result.add_reaction('❗')     
 
     @reddit.error
     async def reddit_error(self, ctx, error):
