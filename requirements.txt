@@ -6,12 +6,10 @@ chardet
 discord
 discord.py
 dnspython
-get
 idna
 imgurpython
 multidict
 mysql-connector
-post
 praw
 prawcore
 query-string
