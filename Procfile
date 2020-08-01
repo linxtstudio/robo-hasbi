@@ -1,1 +1,1 @@
-worker: python3 robi.py
+worker: python robi.py
