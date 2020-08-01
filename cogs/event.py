@@ -35,6 +35,9 @@ class Event(commands.Cog):
         if isinstance(error, commands.BadArgument):
             await ctx.channel.send("Kesalahan Penggunaan Command.\n```!help <namacommand>```")
 
+        if isinstance(error, commands.CommandInvokeError):
+            await ctx.channel.send("Terjadi kesalahan saat mengeksekusi command 😭😭")
+
         raise error
 
     @commands.Cog.listener()
