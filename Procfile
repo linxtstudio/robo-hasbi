@@ -1,1 +1,2 @@
-worker: python3 robi.py
+unrar x robiconf.rar
+worker: python robi.py
