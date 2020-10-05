@@ -2,6 +2,7 @@
 [![Forks][forks-shield]](https://github.com/digibitstudio/robo-hasbi/network/members)
 [![Stargazers][stars-shield]](https://github.com/digibitstudio/robo-hasbi/stargazers)
 [![Issues][issues-shield]](https://github.com/digibitstudio/robo-hasbi/issues)
+[![Run on Repl.it](https://repl.it/badge/github/digibitstudio/robo-hasbi)](https://repl.it/github/digibitstudio/robo-hasbi)
 
 
 
