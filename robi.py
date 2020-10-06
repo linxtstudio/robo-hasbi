@@ -1,14 +1,10 @@
-import discord
-from discord import Embed
-from discord.ext import commands
-from discord.ext.commands import ExtensionError
-import random
 import os
-import robiconf
 import robi_request
-from robiconf.bot_configuration import Token, BotInstance
+from discord.ext import commands
+import base64
 
-bot = BotInstance.bot #ngambil object bot dari robiconf
+bot = commands.Bot('!')
+token_utf8 = base64.b64decode('TnpJM09EWTJNRFV4TlRVNU1UWXhPVE0yLlh3Tk5BUS5ZSk8wWHlfMHV4MzEyMG5GMURYRml1SVQyLW8=')
 
 @bot.command()
 async def load(ctx, extension):
@@ -43,4 +39,4 @@ async def on_ready():
   print(f'{bot.user} has connected to Discord!')
 
 robi_request.wakeup()
-bot.run(Token.token, bot=True, reconnect=True)
+bot.run(token_utf8.decode('utf-8'), bot=True, reconnect=True)
