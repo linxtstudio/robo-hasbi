@@ -5,6 +5,7 @@ from discord.ext.commands import ExtensionError
 import random
 import os
 import robiconf
+import robi_request
 from robiconf.bot_configuration import Token, BotInstance
 
 bot = BotInstance.bot #ngambil object bot dari robiconf
@@ -39,4 +40,5 @@ bot.load_extension('cogs.event')
 async def on_ready():
   print(f'{bot.user} has connected to Discord!')
 
-bot.run(Token.token)
+robi_request.wakeup()
+bot.run(Token.token, bot=True, reconnect=True)
