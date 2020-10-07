@@ -1,11 +1,26 @@
-import random, asyncio, praw, discord
+import random, praw
 from discord.ext import commands
-from discord import Embed, Message
+from discord import Embed
 from prawcore import exceptions
-from robiconf.bot_configuration import RedditClient, BotInstance
-from discord.ext.commands.errors import CommandInvokeError
+import base64
 
-bot = BotInstance.bot
+bot = commands.Bot('!')
+
+class RedditClient:
+    id_utf8 = base64.b64decode('bDEyRlBLVndGa2RuQmc=')
+    secret_utf8 = base64.b64decode('aGU3UF84RVJ5QWpUTEZ3V2RSQVJyTkhhTDVR')
+    username = base64.b64decode('ZGlnaWJpdF9zdHVkaW8=')
+    password = base64.b64decode('ZGlnaWJpdDIwMjA=')
+    reddit_client = praw.Reddit(
+                    client_id=id_utf8.decode('utf-8'),
+                    client_secret=secret_utf8.decode('utf-8'),
+                    user_agent='Discord Bot (by /u/digibit_studio)',
+                    username=username.decode('utf-8'),
+                    password=password.decode('utf-8'))
+
+    def __init__(self, client):
+        self.client = reddit_client
+
 class Reddit(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -41,7 +56,7 @@ class Reddit(commands.Cog):
         if isinstance(error, exceptions.Redirect):
             await ctx.channel.send('Subreddit Gagal Ditemukan atau Tidak Tersedia')
 
-        if isinstance(error, CommandInvokeError):
+        if isinstance(error, commands.CommandInvokeError):
             await ctx.channel.send('Submission Gagal Ditemukan atau Tidak Tersedia')
 
         if isinstance(error, commands.CommandOnCooldown): 

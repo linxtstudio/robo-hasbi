@@ -4,14 +4,19 @@ async-timeout==3.0.1
 attrs==20.2.0
 certifi==2020.6.20
 chardet==3.0.4
+click==7.1.2
 discord==1.0.1
 discord.py==1.5.0
 distlib==0.3.1
 dnspython==2.0.0
 filelock==3.0.12
+Flask==1.1.2
 hentai==1.2
 idna==2.10
 imgurpython==1.1.7
+itsdangerous==1.1.0
+Jinja2==2.11.2
+MarkupSafe==1.1.1
 multidict==4.7.6
 mysql-connector==2.2.9
 praw==7.1.0
@@ -24,4 +29,5 @@ urllib3==1.25.10
 virtualenv==20.0.31
 webs==0.0.4
 websocket-client==0.57.0
+Werkzeug==1.0.1
 yarl==1.6.0
