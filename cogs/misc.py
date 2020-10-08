@@ -1,7 +1,7 @@
 import discord
 import random
 from discord.ext import commands
-from robiconf.bot_configuration import BotInstance
+from configuration import BotInstance
 from robiconf.bot_configuration import connectDB
 
 cursor = connectDB.db.cursor()

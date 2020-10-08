@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from robiconf.bot_configuration import BotInstance
+from configuration import BotInstance
 from discord.ext.commands.errors import CheckFailure
 
 bot = BotInstance.bot
