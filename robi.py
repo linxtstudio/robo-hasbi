@@ -2,8 +2,9 @@ import os
 import robi_request
 from discord.ext import commands
 import base64
+from configuration import BotInstance
 
-bot = commands.Bot('!')
+bot = BotInstance.bot
 token_utf8 = base64.b64decode('TnpJM09EWTJNRFV4TlRVNU1UWXhPVE0yLlh3Tk5BUS5ZSk8wWHlfMHV4MzEyMG5GMURYRml1SVQyLW8=')
 
 @bot.command()
@@ -38,5 +39,5 @@ for filename in os.listdir('./cogs'):
 async def on_ready():
   print(f'{bot.user} has connected to Discord!')
 
-# robi_request.wakeup()
+robi_request.wakeup()
 bot.run(token_utf8.decode('utf-8'), bot=True, reconnect=True)

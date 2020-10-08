@@ -4,7 +4,7 @@ from discord import Embed
 import requests
 import re
 import asyncio
-from robiconf.bot_configuration import BotInstance
+from configuration import BotInstance
 
 def get_readable_int(amount):
     orig = amount

@@ -43,7 +43,8 @@ class NHentai(commands.Cog):
 
     @hentai.command(aliases=['tags', 'search_tag'])
     async def tag(self, ctx, *, tag_search):
-        choices = [doujin['id'] for doujin in Hentai.search_by_query(f'tag:{tag_search}', sort=Sort.Popular)]
+        print(tag_search)
+        choices = [doujin['id'] for doujin in Hentai.search_by_query(f'{tag_search}', sort=Sort.Popular)]
         if choices:
             embedVar = await ctx.channel.send(embed=embed_hentai(random.choice(choices)))
         else:
@@ -76,6 +77,15 @@ class NHentai(commands.Cog):
         else:
             embedVar = await ctx.channel.send(embed=Embed(title=f"Doujin tidak ada atau tidak dapat ditemukan"))        
         await embedVar.add_reaction('❗')
+
+    @hentai.command(aliases=['all'])
+    async def full(self, ctx, nuclear_code, limit=5):
+        doujin = Hentai(nuclear_code)
+        pointer = 0
+        for image in doujin.image_urls:
+            await ctx.channel.send(image)
+            pointer += 1
+            if pointer > limit: break
 
 
 def setup(bot):
