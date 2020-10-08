@@ -43,26 +43,38 @@ class NHentai(commands.Cog):
 
     @hentai.command(aliases=['tags', 'search_tag'])
     async def tag(self, ctx, *, tag_search):
-        id_ = random.choice([doujin['id'] for doujin in Hentai.search_by_query(f'tag:{tag_search}', sort=Sort.Popular)])
-        embedVar = await ctx.channel.send(embed=embed_hentai(id_))
+        choices = [doujin['id'] for doujin in Hentai.search_by_query(f'tag:{tag_search}', sort=Sort.Popular)]
+        if choices:
+            embedVar = await ctx.channel.send(embed=embed_hentai(random.choice(choices)))
+        else:
+            embedVar = await ctx.channel.send(embed=Embed(title=f"Doujin tidak ada atau tidak dapat ditemukan"))        
         await embedVar.add_reaction('❗')
 
     @hentai.command(aliases=['parodies', 'anime'])                
-    async def parody(self, ctx, parodied):
-        id_ = random.choice([doujin['id'] for doujin in Hentai.search_by_query(f'parodies:{parodied}', sort=Sort.Popular)])
-        embedVar = await ctx.channel.send(embed=embed_hentai(id_))
+    async def parody(self, ctx, *, parodied):
+        choices = [doujin['id'] for doujin in Hentai.search_by_query(f'parodies:{parodied}', sort=Sort.Popular)]
+        if choices:
+            embedVar = await ctx.channel.send(embed=embed_hentai(random.choice(choices)))
+        else:
+            embedVar = await ctx.channel.send(embed=Embed(title=f"Doujin tidak ada atau tidak dapat ditemukan"))        
         await embedVar.add_reaction('❗')
 
     @hentai.command(aliases=['author', 'writer'])                
-    async def artist(self, ctx, artist_name):
-        id_ = random.choice([doujin['id'] for doujin in Hentai.search_by_query(f'artist:{artist_name}', sort=Sort.Popular)])
-        embedVar = await ctx.channel.send(embed=embed_hentai(id_))
+    async def artist(self, ctx, *, artist_name):
+        choices = [doujin['id'] for doujin in Hentai.search_by_query(f'artist:{artist_name}', sort=Sort.Popular)]
+        if choices:
+            embedVar = await ctx.channel.send(embed=embed_hentai(random.choice(choices)))
+        else:
+            embedVar = await ctx.channel.send(embed=Embed(title=f"Doujin tidak ada atau tidak dapat ditemukan"))        
         await embedVar.add_reaction('❗')
 
     @hentai.command(aliases=['char'])                
-    async def character(self, ctx, char_name):
-        id_ = random.choice([doujin['id'] for doujin in Hentai.search_by_query(f'character:{char_name}', sort=Sort.Popular)])
-        embedVar = await ctx.channel.send(embed=embed_hentai(id_))
+    async def character(self, ctx, *, char_name):
+        choices = [doujin['id'] for doujin in Hentai.search_by_query(f'character:{char_name}', sort=Sort.Popular)]
+        if choices:
+            embedVar = await ctx.channel.send(embed=embed_hentai(random.choice(choices)))
+        else:
+            embedVar = await ctx.channel.send(embed=Embed(title=f"Doujin tidak ada atau tidak dapat ditemukan"))        
         await embedVar.add_reaction('❗')
 
 
