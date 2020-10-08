@@ -32,15 +32,15 @@
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 
-* [About the Project](#about-the-project)
-  * [Built With](#built-with)
-* [Getting Started](#getting-started)
-  * [Prerequisites](#prerequisites)
-  * [Installation](#installation)
-* [Usage](#usage)
-* [Roadmap](#roadmap)
-* [Contributing](#contributing)
-* [Acknowledgements](#acknowledgements)
+- [Table of Contents](#table-of-contents)
+- [About The Project](#about-the-project)
+  - [Built With](#built-with)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [Acknowledgements](#acknowledgements)
 
 
 
@@ -79,19 +79,7 @@ git clone https://github.com/digibitstudio/robo-hasbi.git
 2. Install Python packages
 ```sh
 pip install -r requirements.txt
-```
-3. Extract the robiconf.rar in the root directory
-
 If you already know how to use Python virtualenv, we suggest you to do step 2 inside a virtualenv
-
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
 
 
 
@@ -99,7 +87,6 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 ## Roadmap
 
 See the [open issues](https://github.com/digibitstudio/robo-hasbi/issues) for a list of proposed features (and known issues).
-
 
 
 <!-- CONTRIBUTING -->
@@ -121,6 +108,7 @@ Contributions are what make the open source community such an amazing place to b
 
 * [PRAW](https://praw.readthedocs.io/)
 * [imgurpython](https://github.com/Imgur/imgurpython)
+* [hentai](https://github.com/hentai-chan/hentai)
 * [README template](https://github.com/othneildrew/Best-README-Template)
 
 

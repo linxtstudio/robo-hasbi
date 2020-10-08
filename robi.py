@@ -2,8 +2,9 @@ import os
 import robi_request
 from discord.ext import commands
 import base64
+from configuration import BotInstance
 
-bot = commands.Bot('!')
+bot = BotInstance.bot
 token_utf8 = base64.b64decode('TnpJM09EWTJNRFV4TlRVNU1UWXhPVE0yLlh3Tk5BUS5ZSk8wWHlfMHV4MzEyMG5GMURYRml1SVQyLW8=')
 
 @bot.command()
