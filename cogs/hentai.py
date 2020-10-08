@@ -57,7 +57,13 @@ class NHentai(commands.Cog):
     async def artist(self, ctx, artist_name):
         id_ = random.choice([doujin['id'] for doujin in Hentai.search_by_query(f'artist:{artist_name}', sort=Sort.Popular)])
         embedVar = await ctx.channel.send(embed=embed_hentai(id_))
-        await embedVar.add_reaction('❗')    
+        await embedVar.add_reaction('❗')
+
+    @hentai.command(aliases=['char'])                
+    async def character(self, ctx, char_name):
+        id_ = random.choice([doujin['id'] for doujin in Hentai.search_by_query(f'character:{char_name}', sort=Sort.Popular)])
+        embedVar = await ctx.channel.send(embed=embed_hentai(id_))
+        await embedVar.add_reaction('❗')
 
 
 def setup(bot):
