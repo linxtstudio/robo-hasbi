@@ -12,14 +12,6 @@ class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases = ['cls']) 
-    async def clear(self, ctx, number): #nama command (harus dipanggil pakai prefix diatas)
-        msg = []
-        number= int(number)
-        for x in ctx.logs_from(ctx.message.channel, limit = number):
-            msg.append(x)
-        await ctx.delete_messages(msg)
-
     @commands.command(aliases = ['who', 'saha']) 
     async def siapa(self, ctx, user: discord.Member): #nama command (harus dipanggil pakai prefix diatas)
         record = getData(user)[0]
