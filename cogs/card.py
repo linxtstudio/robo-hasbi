@@ -76,9 +76,12 @@ class CardGame(commands.Cog):
 
 def game_finished(player, player_hand, dealer_hand, bet, force_finished=False):
     winner, message = game_state(player, player_hand, dealer_hand)
-    if (score_counter(player_hand) >= 21 or score_counter(dealer_hand) >= 21) or force_finished:
+    player_score = score_counter(player_hand)
+    dealer_score = score_counter(dealer_hand)
+    
+    if dealer_score == 21 or player_score == 21 or player_score >= 21 or (dealer_score >= 21 and force_finished):
         game_embed = bj_embed(player, player_hand, dealer_hand, winner, bet, True, message)
-        return True, game_embed
+        return True, game_embed        
     
     game_embed = bj_embed(player, player_hand, dealer_hand, winner, bet, False, message)
     return False, game_embed
