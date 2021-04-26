@@ -21,6 +21,12 @@ class RedditClient:
     def __init__(self, client):
         self.client = self.reddit_client
 
+def check_is_valid_image(url):
+    url = str(url)
+    if url.endswith('jpg') or url.endswith('jpeg') or url.endswith('png') or url.endswith('webm') or url.endswith('gif'):
+        return True
+    return False
+
 class Reddit(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -34,15 +40,15 @@ class Reddit(commands.Cog):
             posts = random.choice([x for x in reddit_client.subreddit(subreddit_search).random_rising(limit = 1)])
        
         embedVar = Embed(title=posts.title, url=posts.url)
-        if posts.thumbnail and posts.is_reddit_media_domain:
+
+        if posts.thumbnail and check_is_valid_image(posts.url):
             embedVar.add_field(name=f'Post by /u/{posts.author}', value="\u200b")
-            if posts.is_video:
-                embedVar.set_video(video=posts.url)
-            else:
-                embedVar.set_image(url=posts.url)
-        else:
-            if posts.selftext != '' and len(str(posts.selftext)) <= 1024:
-                embedVar.add_field(name=f'Post by /u/{posts.author}', value=posts.selftext)
+            embedVar.set_image(url=posts.url)
+        if posts.is_video:
+            embedVar.add_field(name=f'Post by /u/{posts.author}', value="\u200b")
+            embedVar.set_video(video=posts.url)
+        if posts.selftext != '' and len(str(posts.selftext)) <= 1024:
+            embedVar.add_field(name=f'Post by /u/{posts.author}', value=posts.selftext)
 
         embedVar.set_footer(text=f'👍 {posts.ups} | 👎 {posts.downs}')
         embed_result = await ctx.channel.send(embed = embedVar)                
