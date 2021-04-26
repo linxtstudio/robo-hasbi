@@ -5,7 +5,7 @@ from discord.ext.commands import Context
 from configuration import BotInstance
 import requests
 
-deckAPI = "http://localhost:8000/deck"
+deckAPI = "https://go-deck.harizmunawar.repl.co/deck"
 currAPI = "https://robo-hasbi-currency-api.ganiyamustafa.repl.co"
 bot = BotInstance.bot
 
