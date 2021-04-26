@@ -17,9 +17,12 @@ class CardGame(commands.Cog):
     @commands.command(aliases=['bj'])
     async def blackjack(self, ctx:Context, bet:int):
         player = ctx.author
-        player_curr = requests.get(currAPI+"/curr/"+str(player.id)).json()['data']['bal']
-        if bet > int(player_curr):
-            await ctx.send("Kamu gak punya uang sebanyak itu untuk dipakai berjudi")
+        player_curr = requests.get(currAPI+"/curr/"+str(player.id))
+        if player_curr.status_code == 404:
+            await ctx.send(embed=Embed().add_field(name="Tidak Dapat Memulai Game Blackjack", value="Sepertinya Anda Belum Terdaftar Di Dalam Database Kami, Ketik !regis Untuk Mendaftarkan Diri"))
+            return
+        if bet > int(player_curr.json()['data']['bal']):
+            await ctx.send(embed=Embed().add_field(name="Tidak Dapat Memulai Game Blackjack", value="Anda Tidak Punya Uang Sebanyak Itu Untuk Digunakan Berjudi"))
             return
         
         player_hand = []
@@ -58,7 +61,9 @@ class CardGame(commands.Cog):
                         finished, game_embed = game_finished(player, player_hand, dealer_hand, bet, True)
 
                     if message == 'a':
-                        pass
+                        finished = True
+                        game_embed = Embed(color=0xff0000).add_field(name="Permainan Dihentikan", value=f"{player.name} Harus Membayar {bet/2}N$")
+                        requests.post(currAPI+"/curr/add/"+str(player.id)+"/"+str((bet/2)))
 
                 await ctx.send(embed=game_embed)
 
@@ -92,6 +97,7 @@ def bj_embed(player, player_hand, dealer_hand, winner, bet, finished, message=""
 
     game_embed = Embed(color=color)
     game_embed.set_author(name=f"{player.name} Memulai Blackjack", icon_url=player.avatar_url)
+    game_embed.set_footer(text='Ketik h untuk hit, s untuk stand, atau a untuk akhiri permainan')
 
     if finished and winner == 'Draw':
         game_embed.add_field(name=f"Skor Seri!!! {message}", value="Tidak Ada Yang Harus Kehilangan Uang", inline=False)
@@ -159,7 +165,7 @@ def score_counter(list_card, n=None, with_rank=False):
 def game_state(player, player_hand, dealer_hand):
     player_score = score_counter(player_hand)
     dealer_score = score_counter(dealer_hand)
-    if player_score > 21: return 'Bang Hasbbi', 'Anda Busted'
+    if player_score > 21: return 'Bang Hasbi', 'Anda Busted'
     if dealer_score > 21: return player.name, 'Bang Hasbi Busted'
     if dealer_score == 21: return 'Bang Hasbi', 'Bang Hasbi Mendapat Blackjack'
     if player_score == 21: return player.name, 'Anda Mendapat Blackjack'
@@ -168,7 +174,7 @@ def game_state(player, player_hand, dealer_hand):
     if dealer_score == player_score: return 'Draw', 'Skor Kalian Sama Ciee'
 
     return None, None
-    
+
 def dealer_ai(deck_id, dealer_hand):
     dealer_score, rank_list = score_counter(dealer_hand, with_rank=True)
 
