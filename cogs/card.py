@@ -43,7 +43,7 @@ class CardGame(commands.Cog):
                     reply = await bot.wait_for('message', check=lambda m: (m.content.lower() in ['h', 's', 'a'] or m.content.lower().startswith('!bj')) and m.author == player, timeout=120)
                     message = reply.content.lower()
 
-                    if message == '!bj':
+                    if message.startswith('!bj'):
                         await ctx.send("Anda masih memiliki game yang sedang berlangsung.")
 
                     if message == 'h':
