@@ -19,7 +19,7 @@ class RedditClient:
                     password=password.decode('utf-8'))
 
     def __init__(self, client):
-        self.client = reddit_client
+        self.client = self.reddit_client
 
 class Reddit(commands.Cog):
     def __init__(self, bot):
