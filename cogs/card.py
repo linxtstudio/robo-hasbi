@@ -30,8 +30,8 @@ class CardGame(commands.Cog):
         initGame.set_author(name=f"{player.name} Memulai Blackjack", icon_url=player.avatar_url)
         initGame.add_field(name=player.name, value=f"Cards - {' '.join(card_parser(player_hand))}\nScore - {score_counter(player_hand)}")
         initGame.add_field(name="Bang Hasbi", value=f"Cards - {card_parser(dealer_hand)[0]} ? \nScore - {score_counter(dealer_hand, 1)}")
+        initGame.set_footer(text='Ketik h untuk hit, s untuk stand, atau a untuk akhiri permainan')
 
-        await ctx.send("Ketik h untuk hit, s untuk stand, atau a untuk akhiri permainan")
         await ctx.send(embed=initGame)
 
         try:
@@ -77,10 +77,10 @@ def game_finished(player, player_hand, dealer_hand, bet, force_finished=False):
     winner, message = game_state(player, player_hand, dealer_hand)
     player_score = score_counter(player_hand)
     dealer_score = score_counter(dealer_hand)
-    
-    if dealer_score == 21 or player_score == 21 or player_score >= 21 or (dealer_score >= 21 and force_finished):
+
+    if dealer_score == 21 or player_score == 21 or player_score >= 21 or (dealer_score >= 21 and force_finished) or force_finished:
         game_embed = bj_embed(player, player_hand, dealer_hand, winner, bet, True, message)
-        return True, game_embed        
+        return True, game_embed
     
     game_embed = bj_embed(player, player_hand, dealer_hand, winner, bet, False, message)
     return False, game_embed
@@ -103,9 +103,9 @@ def bj_embed(player, player_hand, dealer_hand, winner, bet, finished, message=""
 
     if finished:
         game_embed.add_field(name="Bang Hasbi", value=f"Cards - {' '.join(card_parser(dealer_hand))}\nScore - {score_counter(dealer_hand)}")
-    else:
-        game_embed.add_field(name="Bang Hasbi", value=f"Cards - {card_parser(dealer_hand)[0]} ? \nScore - {score_counter(dealer_hand, 1)}")
-    return game_embed
+        return game_embed
+    
+    return game_embed.add_field(name="Bang Hasbi", value=f"Cards - {card_parser(dealer_hand)[0]} ? \nScore - {score_counter(dealer_hand, 1)}")
 
 def init_bj(player_hand, dealer_hand):
     deck = requests.get(deckAPI+"/create?shuffle=true")
