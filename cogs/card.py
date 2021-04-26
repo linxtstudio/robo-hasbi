@@ -66,8 +66,7 @@ class CardGame(commands.Cog):
             if winner == player.name:
                 requests.post(currAPI+"/curr/add/"+str(player.id)+"/"+str(bet))
             elif winner == 'Bang Hasbi':
-                test = requests.post(currAPI+"/curr/min/"+str(player.id)+"/"+str(bet))
-                await ctx.send(test.status_code)
+                requests.post(currAPI+"/curr/min/"+str(player.id)+"/"+str(bet))
 
         except asyncio.TimeoutError:
             await ctx.send(f"{player.name} tidak menjawab dalam 2 menit :(")
