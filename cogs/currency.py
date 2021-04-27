@@ -105,20 +105,20 @@ class Currency(commands.Cog):
         raise error    
 
     @commands.command(aliases=["bal"])
-    @commands.cooldown(1, 3600*12, commands.BucketType.user) 
-    async def ballance(self, ctx):
-        id_ = ctx.message.author.id
-        nick = ctx.message.author.name
+    async def ballance(self, ctx, user: discord.Member = None):
+        id_ = ctx.message.author.id if not user else user.id
+        name = ctx.message.author.name if not user else user.name
+        icon = ctx.message.author.avatar_url if not user else user.avatar_url
         url = f'{self.url_request}/curr'
         get = requests.get(f'{url}/{id_}')
         if get.status_code == 200:
             bal = get.json()['data']['bal']
             embed = discord.Embed(color=0x00ff00)
-            embed.add_field(name=f"Keuangan {nick}", value=f"{bal} N$")
+            embed.set_author(name=f"Keuangan {name}", icon_url=icon)
+            embed.add_field(name=f"Wallet", value=f"{bal} N$")
             await ctx.channel.send(embed = embed)
             return
-        embed = discord.Embed(title=f"Anda belum terdaftar silahkan regis dahulu", color=0xff0000)
-        await ctx.channel.send(embed = embed)
+        await ctx.channel.send(embed = discord.Embed().add_field(name="Mohon Maaf", value="Sepertinya User Belum Terdaftar Di Dalam Database Kami, Ketik !regis Untuk Mendaftarkan Diri"))
 
 def setup(bot):
     bot.add_cog(Currency(bot))
