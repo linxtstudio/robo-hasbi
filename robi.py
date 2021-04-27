@@ -32,7 +32,7 @@ async def reload_error(ctx, error):
   await ctx.message.add_reaction('👎')
 
 for filename in os.listdir('./cogs'):  
-  if filename.endswith('.py') and not (filename[:-3] == "currency" or filename[:-3] == "misc" or filename[:-3] == "settings"):    
+  if filename.endswith('.py') and not (filename[:-3] == "misc" or filename[:-3] == "settings"):
     bot.load_extension(f'cogs.{filename[:-3]}')
 
 @bot.event

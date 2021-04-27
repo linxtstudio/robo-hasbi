@@ -1,132 +1,124 @@
 import discord
 import random
+import time
+import requests
+import os
 from discord.ext import commands
 from discord import Embed, Member
-from robiconf.bot_configuration import connectDB
-
-cursor = connectDB.db.cursor()
+from PIL import Image, ImageDraw, ImageFont
 
 class Currency(commands.Cog):
-
+    url_request = "https://robo-hasbi-currency-api.ganiyamustafa.repl.co"
+    url_req_pengujian = "http://localhost:5000"
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases = ['d'])
-    @commands.cooldown(1, 86400, commands.BucketType.user)
+    def get_avatar(self, avatar_url):
+        return Image.open(requests.get(avatar_url, stream=True).raw)
+
+    def create_card(self, Id, name, role, avatar_url):
+        image = Image.open(f'{os.path.join(os.getcwd())}/idcard/idcard.png')
+        pp = self.get_avatar(avatar_url)
+        mask = Image.open(f'{os.path.join(os.getcwd())}/idcard/circle.png').convert('L')
+
+        pp = pp.resize(mask.size)
+        image.paste(pp, (535,886), mask)
+
+        draw = ImageDraw.Draw(image)
+
+        font = ImageFont.truetype(f'{os.path.join(os.getcwd())}/idcard/Roboto-Bold.ttf', size=75)
+
+        (x, y) = (800, 2690)
+        color = 'rgb(0, 0, 0)' # black color
+        draw.text((x, y), str(Id), fill=color, font=font)
+
+        (x, y) = (800, 2795)
+        color = 'rgb(0, 0, 0)' # black color
+        draw.text((x, y), name, fill=color, font=font)
+
+        (x, y) = (800, 2905)
+        color = 'rgb(0, 0, 0)' # black color
+        draw.text((x, y), role[-1], fill=color, font=font)
+
+        image.save("id_card.png")
+
+    @commands.command(aliases=['regis', 'register'])
+    async def reg(self, ctx):
+        id_, name = ctx.message.author.id, ctx.message.author.name
+        url = f'{self.url_request}/account'
+        x = requests.post(url, json={"id": id_, "name": name})
+        if x.status_code == 201:
+            y = requests.post(f'{self.url_request}/curr/daily', json={"id": id_, 'bal': 0})
+            embed = discord.Embed(title="Akun Berhasil Dibuat", color=0x00ff00)
+            await ctx.channel.send(embed = embed)
+            return
+        embed = discord.Embed(title=x.json()['message'], color=0xff0000)
+        await ctx.channel.send(embed = embed)
+
+    @commands.command(aliases=['info', 'account'])
+    async def account_info(self, ctx, user: discord.Member = None):
+        id_ = ctx.message.author.id if not user else user.id
+        role = [x.name.upper() for x in ctx.message.author.roles] if not user else [x.name.upper() for x in user.roles]
+        avatar_url = ctx.message.author.avatar_url if not user else user.avatar_url
+        url = f'{self.url_request}/account'
+        x = requests.get(f"{url}/{id_}")
+
+        # with requests.get(ctx.message.author.avatar_url) as r:
+        #     img_data = r.content
+        # with open('pp.png', 'wb') as handler:
+        #     handler.write(img_data)
+
+        if x.status_code == 200:
+            name = x.json()['data']['name']
+            await ctx.channel.send("Tunggu sebentar, sedang memuat id card")
+            self.create_card(id_, name, role, avatar_url)
+            with open(f'{os.path.join(os.getcwd())}/id_card.png', 'rb') as f:
+                picture = discord.File(f)
+                await ctx.channel.send(file=picture)
+            os.unlink("id_card.png")
+            return
+        await ctx.channel.send("User belum terdaftar silahkan regis dulu")
+
+    @commands.command()
+    @commands.cooldown(1, 3600*12, commands.BucketType.user) 
     async def daily(self, ctx):
-        bal = random.randint(100,500)
-        embedVar = Embed(title="You Get `"+str(bal)+" N$` from daily", color=0x00ff00)
-        try:
-            if getData(ctx.author)[0] == 0:
-                insertCur(ctx.author.id, bal)
-                await ctx.channel.send(embed = embedVar)
-            else:
-                bal = bal+getData(ctx.author)[1]
-                bank = getData(ctx.author)[2]
-                updateCur(ctx.author.id, bal, bank)
-                await ctx.channel.send(embed = embedVar)
-        except Exception as e: 
-            await ctx.channel.send('> more info `!help currency`')
-            print(e)
-    
-    @commands.command(aliases = ['bal', 'Ballance'])
+        id_ = ctx.message.author.id
+        url = f'{self.url_request}/curr'
+        get = requests.get(f'{url}/{id_}')
+        bal = 0
+        if get.status_code == 200:
+            bal = get.json()['data']['bal']
+            x = requests.post(f'{url}/daily', json={'id': id_, 'bal': bal})
+            if x.status_code == 200:
+                embed = discord.Embed(title=f"{x.json()['curr']} N$ Get", color=0x00ff00)
+                await ctx.channel.send(embed = embed)
+                return
+        embed = discord.Embed(title=f"Anda belum terdaftar silahkan regis dahulu", color=0xff0000)
+        await ctx.channel.send(embed = embed)
+
+    @daily.error
+    async def daily_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown): 
+            cd = time.gmtime(error.retry_after)
+            await ctx.channel.send(f'Cooldown boss, coba lagi setelah {time.strftime("%H H %M M %S S",cd)}')
+
+        raise error    
+
+    @commands.command(aliases=["bal"])
+    @commands.cooldown(1, 3600*12, commands.BucketType.user) 
     async def ballance(self, ctx):
-        try:
-            if(getData(ctx.author)[0] != 0):
-                data = getData(ctx.author)
-                wal = data[1]
-                bank = data[2]
-                tot = wal+bank
-
-                embedVar = Embed(title="Tabunganmmu", 
-                                description="**Wallet**: "+str(wal)+" `N$`\n**Bank**: "+str(bank)+" `N$`\n**Total**: "+str(tot)+" `N$`",
-                                color=0x00ff00)
-            else: embedVar = Embed(title="Your Ballance", 
-                                description="**Wallet: **0 `N$`\n**Bank: **0 `N$`\n**Total: **0 `N$`",
-                                color=0x00ff00)
-            await ctx.channel.send(embed = embedVar)
-        except Exception as e: 
-            await ctx.channel.send('> more info `!help currency`')
-            print(e)
-
-    @commands.command(aliases = ['Deposit'])
-    async def deposit(self, ctx, sub1):
-        try:
-            data = getData(ctx.author)
-            if(data[0] == 0): 
-                wal = 0
-                bank = 0
-                depo = 0
-            else: 
-                if sub1.lower() == 'all':
-                    wal = 0
-                    bank = data[1]+data[2]
-                    depo = str(data[1])
-                else:
-                    wal = data[1]-int(sub1)
-                    bank = data[2]+int(sub1)
-                    depo = sub1
-
-            embedVar = Embed(title="Kamu Mendepositkan `"+depo+" N$`", 
-                                color=0x00ff00)
-
-            if data[0] == 0 and wal >= 0: insertCur(ctx.author.id, wal, bank)
-            elif data[0] != 0 and wal >= 0: updateCur(ctx.author.id, wal, bank)
-            else: embedVar = Embed(title="Kamu tidak memiliki jumlah uang yang cukup untuk didepositkan", color=0xFF0000)
-
-            await ctx.channel.send(embed = embedVar)
-        except Exception as e: 
-            await ctx.channel.send('> more info `!help currency`')
-            print(e)
-    
-    @commands.command(aliases = ['Withdraw'])
-    async def withdraw(self, ctx, sub1):
-        try:
-            data = getData(ctx.author)
-            if(data[0] == 0): 
-                wal = 0
-                bank = 0
-                withdraw = 0
-            else: 
-                if sub1.lower() == 'all':
-                    wal = data[1]+data[2]
-                    bank = 0
-                    withdraw = str(data[2])
-                else:
-                    wal = data[1]+int(sub1)
-                    bank = data[2]-int(sub1)
-                    withdraw = sub1
-            
-            embedVar = Embed(title="Kamu mengambil `"+withdraw+" N$` dari bank", 
-                            color=0x00ff00)
-
-            if data[0] == 0 and bank >= 0: insertCur(ctx.author.id, wal, bank)
-            elif data[0] != 0 and bank >= 0: updateCur(ctx.author.id, wal, bank)
-            else: embedVar = Embed(title="Kamu tidak memiliki jumlah uang yang cukup untuk diambil", color=0xFF0000)
-
-            await ctx.channel.send(embed = embedVar)
-        except Exception as e: 
-            await ctx.channel.send('> more info `!help currency`')
-            print(e)
-
-def getData(user: discord.Member):
-        userID = str(user.id)
-        sql = "SELECT count(*), ballance, bank FROM currency where idProfil='"+userID+"'"
-        cursor.execute(sql)
-        results = cursor.fetchone()
-        return results
-
-def insertCur(id, bal=None, bank=0):
-    sql = "INSERT INTO currency VALUES (%s, %s, %s)"
-    val = (str(id), bal, bank)
-    cursor.execute(sql, val)
-    connectDB.db.commit()
-
-def updateCur(id, bal=None, bank=0):
-    sql = "UPDATE currency set ballance=%s, bank=%s where idProfil=%s"
-    val = (bal, bank, str(id))
-    cursor.execute(sql, val)
-    connectDB.db.commit()
+        id_ = ctx.message.author.id
+        nick = ctx.message.author.name
+        url = f'{self.url_request}/curr'
+        get = requests.get(f'{url}/{id_}')
+        if get.status_code == 200:
+            bal = get.json()['data']['bal']
+            embed = discord.Embed(color=0x00ff00)
+            embed.add_field(name=f"Keuangan {nick}", value=f"{bal} N$")
+            await ctx.channel.send(embed = embed)
+            return
+        embed = discord.Embed(title=f"Anda belum terdaftar silahkan regis dahulu", color=0xff0000)
+        await ctx.channel.send(embed = embed)
 
 def setup(bot):
     bot.add_cog(Currency(bot))
