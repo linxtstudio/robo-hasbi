@@ -38,6 +38,5 @@ for filename in os.listdir('./cogs'):
 @bot.event
 async def on_ready():
   print(f'{bot.user} has connected to Discord!')
-
 robi_request.wakeup()
 bot.run(token_utf8.decode('utf-8'), bot=True, reconnect=True)
