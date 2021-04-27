@@ -170,7 +170,7 @@ def game_state(player, player_hand, dealer_hand):
     if dealer_score == 21: return 'Bang Hasbi', 'Bang Hasbi Mendapat Blackjack'
     if player_score == 21: return player.name, 'Anda Mendapat Blackjack'
     if player_score > dealer_score and player_score < 21: return player.name, 'Skor Anda Lebih Besar Dari Bang Hasbi'
-    if dealer_score > player_score and dealer_score < 21: return 'Dealer', 'Skor Bang Hasbi Lebih Besar Dari Anda'
+    if dealer_score > player_score and dealer_score < 21: return 'Bang Hasbi', 'Skor Bang Hasbi Lebih Besar Dari Anda'
     if dealer_score == player_score: return 'Draw', 'Skor Kalian Sama Ciee'
 
     return None, None
