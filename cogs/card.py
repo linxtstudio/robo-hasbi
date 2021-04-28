@@ -134,6 +134,5 @@ def score_counter(list_card, n=None, with_rank=False):
 
     return score
 
-
 def setup(bot):
     bot.add_cog(CardGame(bot))
