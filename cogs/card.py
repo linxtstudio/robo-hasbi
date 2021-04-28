@@ -66,14 +66,15 @@ class CardGame(commands.Cog):
                         finished = True
                         game_embed = Embed(color=0xff0000).add_field(name="Permainan Dihentikan", value=f"{player.name} Harus Membayar {bet/2}N$")
                         requests.post(currAPI+"/curr/add/"+str(player.id)+"/"+str((bet/2)))
-
-                player_hand = [card for card in status["playerHand"]]
-                dealer_hand = [card for card in status["dealerHand"]]
-                winner = status["winner"]
-                message = status["message"]
-                finished = status["finished"]
+                        status = None
                 
-                if not message == 'a': game_embed = bj_embed(player, player_hand, dealer_hand, winner, bet, finished, message)
+                if status:
+                    player_hand = [card for card in status["playerHand"]]
+                    dealer_hand = [card for card in status["dealerHand"]]
+                    winner = status["winner"]
+                    message = status["message"]
+                    finished = status["finished"]
+                    game_embed = bj_embed(player, player_hand, dealer_hand, winner, bet, finished, message)
 
                 await ctx.send(embed=game_embed)
 
