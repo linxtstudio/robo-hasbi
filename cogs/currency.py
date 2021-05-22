@@ -120,5 +120,30 @@ class Currency(commands.Cog):
             return
         await ctx.channel.send(embed = discord.Embed().add_field(name="Mohon Maaf", value="Sepertinya User Belum Terdaftar Di Dalam Database Kami, Ketik !regis Untuk Mendaftarkan Diri"))
 
+    @commands.group()
+    async def shop(self, ctx):
+        url = f'{self.url_req_pengujian}/item'
+        get = requests.get(url)
+        if get.status_code == 200:
+            item = get.json()['data']
+            embed = discord.Embed(title="Toko Hasbi", color=0x00ff00)
+            for x in item:
+                embed.add_field(name=f"{x['name']}", value=f"{x['cost']} N$")
+            await ctx.channel.send(embed = embed)
+            return
+        await ctx.channel.send(embed = discord.Embed().add_field(name="Mohon Maaf", value="Sepertinya User Belum Terdaftar Di Dalam Database Kami, Ketik !regis Untuk Mendaftarkan Diri"))
+
+    @shop.command()
+    async def item(self, ctx, item):
+        url = f'{self.url_req_pengujian}/item/{item}'
+        get = requests.get(url)
+        if get.status_code == 200:
+            item = get.json()['data']
+            embed = discord.Embed(title=f"{item['name']}", color=0x00ff00)
+            embed.add_field(name=f"{item['cost']} N$", value=f"{item['effect']}")
+            await ctx.channel.send(embed = embed)
+            return
+        await ctx.channel.send(embed = discord.Embed().add_field(name="Mohon Maaf", value="Item tidak tersedia"))
+
 def setup(bot):
     bot.add_cog(Currency(bot))
