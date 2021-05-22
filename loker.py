@@ -99,14 +99,14 @@ def main():
         else:
             os.environ["LAST_IMAGE_ID"] = get_last_publication_url(html)
             print("New image to post in discord.")
-            webhook('https://discord.com/api/webhooks/845531517857169419/iS1F5dkGBZtXNWvMW3FmgQjUoG7mwed0sdFAzS0JeMU1FvftVDrhK2JUYNI30sGSv91v',
+            webhook('webhook_url',
                     get_instagram_html(INSTAGRAM_USERNAME))
     except Exception as e:
         print(e)
 
 
 def cari_loker():
-    if 'loker.programmer' != None and 'https://discord.com/api/webhooks/845531517857169419/iS1F5dkGBZtXNWvMW3FmgQjUoG7mwed0sdFAzS0JeMU1FvftVDrhK2JUYNI30sGSv91v' != None:
+    if 'loker.programmer' != None and 'Webhook_url' != None:
         while True:
             main()
             time.sleep(float(600)) # 600 = 10 minutes
