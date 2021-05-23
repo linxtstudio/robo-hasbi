@@ -27,7 +27,7 @@ import time
 # Set TIME_INTERVAL to the time in seconds in between each check for a new post. Example - 1.5, 600 (default=600)
 # Help: https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-set-environment-variables-in-linux/
 
-INSTAGRAM_USERNAME = 'loker.programmer'
+INSTAGRAM_USERNAME = ['loker.programmer', 'lokeritindonesia]
 
 # ----------------------- Do not modify under this line ----------------------- #
 
@@ -91,24 +91,25 @@ def get_instagram_html(INSTAGRAM_USERNAME):
     return html
 
 
-def main():
+def main(ig_user):
     try:
-        html = get_instagram_html(INSTAGRAM_USERNAME)
-        if(os.environ.get("LAST_IMAGE_ID") == get_last_publication_url(html)):
+        html = get_instagram_html(ig_user)
+        if(os.environ.get(f"LAST_IMAGE_ID_{ig_user}") == get_last_publication_url(html)):
             print("Not new image to post in discord.")
         else:
-            os.environ["LAST_IMAGE_ID"] = get_last_publication_url(html)
+            os.environ[f"LAST_IMAGE_ID_{ig_user}"] = get_last_publication_url(html)
             print("New image to post in discord.")
-            webhook('webhook_url',
-                    get_instagram_html(INSTAGRAM_USERNAME))
+            webhook('https://discord.com/api/webhooks/845531517857169419/iS1F5dkGBZtXNWvMW3FmgQjUoG7mwed0sdFAzS0JeMU1FvftVDrhK2JUYNI30sGSv91v',
+                    get_instagram_html(ig_user), ig_user)
     except Exception as e:
         print(e)
 
 
 def cari_loker():
-    if 'loker.programmer' != None and 'Webhook_url' != None:
+    if INSTAGRAM_USERNAME and 'https://discord.com/api/webhooks/845531517857169419/iS1F5dkGBZtXNWvMW3FmgQjUoG7mwed0sdFAzS0JeMU1FvftVDrhK2JUYNI30sGSv91v' != None:
         while True:
-            main()
+            for ig_user in INSTAGRAM_USERNAME:
+                Thread(target=main, args=(ig_user,)).start()
             time.sleep(float(600)) # 600 = 10 minutes
     else:
         print('Please configure environment variables properly!')
