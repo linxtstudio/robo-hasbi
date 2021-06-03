@@ -1,4 +1,5 @@
 import os
+import discord
 import robi_request
 import loker
 from discord.ext import commands
@@ -39,6 +40,8 @@ for filename in os.listdir('./cogs'):
 
 @bot.event
 async def on_ready():
+  channel = bot.get_channel(727873186951200770)
+  await channel.send('maaf tadi ketiduran')
   print(f'{bot.user} has connected to Discord!')
 robi_request.wakeup()
 Thread(target=loker.cari_loker).start()
