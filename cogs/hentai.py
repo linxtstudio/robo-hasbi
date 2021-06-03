@@ -10,17 +10,24 @@ def embed_hentai(code):
         doujin = Hentai(code)
     except HTTPError:
         return Embed(title=f"Doujin dengan code {code} tidak ada")
-        
+      
+    
+    tags = [tag.name for tag in doujin.tag]
+    artists = [artist.name for artist in doujin.artist]
+    languages = [language.name for language in doujin.language]
+    
+
     embed = Embed(title=f"{doujin.title(Format.Pretty)}")
     embed.set_image(url=doujin.thumbnail)        
     embed.add_field(name='Code', value=code)
-    for artist in doujin.artist:
-        embed.add_field(name='Artist', value=artist.name)  
+    embed.add_field(name='Artist', value=', '.join(artists))
     embed.add_field(name='Release Date', value=str(doujin.upload_date)[0:10])
+    embed.add_field(name='Language', value=', '.join(languages))
+    embed.add_field(name='Pages Number', value=doujin.num_pages)
     embed.add_field(name="Start Reading", value=doujin.url)
-    tags = [tag.name for tag in doujin.tag]
+    
     embed.set_footer(text=f"Tags: {', '.join(tags)}")
-
+    
     return embed    
 
 class NHentai(commands.Cog):    
@@ -43,7 +50,6 @@ class NHentai(commands.Cog):
 
     @hentai.command(aliases=['tags', 'search_tag'])
     async def tag(self, ctx, *, tag_search):
-        print(tag_search)
         choices = [doujin['id'] for doujin in Hentai.search_by_query(f'{tag_search}', sort=Sort.Popular)]
         if choices:
             embedVar = await ctx.channel.send(embed=embed_hentai(random.choice(choices)))

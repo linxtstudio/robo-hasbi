@@ -26,6 +26,27 @@ def check_is_valid_image(url):
     if url.endswith('jpg') or url.endswith('jpeg') or url.endswith('png') or url.endswith('webm') or url.endswith('gif'):
         return True
     return False
+  
+def nsfw_check(search_query: str):
+    if 'nsfw' in search_query.lower():
+        return True
+    return False
+
+def search_submission(reddit_client, subreddit_search, submission_search):
+    if submission_search != "":           
+        return random.choice([x for x in reddit_client.subreddit(subreddit_search).search(submission_search, limit=100)])
+
+    return random.choice([x for x in reddit_client.subreddit(subreddit_search).hot(limit=100)])
+
+def check_is_imgur(url):
+  if url.__contains__("/a/"):
+      url = url.replace("/a", "")
+  if url.__contains__("https://imgur.com") or url.__contains__("http://imgur.com"):
+      url = url.replace("imgur.com", "i.imgur.com")
+      url += ".jpg"
+
+  return url, url.__contains__("imgur.com")
+
 
 class Reddit(commands.Cog):
     def __init__(self, bot):
@@ -33,22 +54,34 @@ class Reddit(commands.Cog):
 
     @commands.command(aliases=['r'])
     async def reddit(self, ctx, subreddit_search, *, submission_search=""):        
-        reddit_client = RedditClient.reddit_client           
-        if submission_search != "":           
-            posts = random.choice([x for x in reddit_client.subreddit(subreddit_search).search(submission_search, limit=20)])            
-        else:
-            posts = random.choice([x for x in reddit_client.subreddit(subreddit_search).random_rising(limit = 1)])
-       
-        embedVar = Embed(title=posts.title, url=posts.url)
+        reddit_client = RedditClient.reddit_client
+        nsfw = nsfw_check(submission_search)
+        posts = search_submission(reddit_client, subreddit_search, submission_search)
+        iteration = 0
+        posts.url, imgur = check_is_imgur(posts.url)
 
-        if posts.thumbnail and check_is_valid_image(posts.url):
-            embedVar.add_field(name=f'Post by /u/{posts.author}', value="\u200b")
+        while nsfw and not posts.over_18:
+            if iteration >= 10: raise commands.CommandInvokeError
+            posts = search_submission(reddit_client, subreddit_search, submission_search)
+            iteration += 1
+
+        embedVar = Embed(title=posts.title, url=posts.url)
+        embedVar.set_author(name=f'Post by /u/{posts.author}', url=f'https://www.reddit.com/user/{posts.author}')
+
+        if posts.link_flair_text:
+          embedVar.add_field(name='Flair', value=f"{posts.link_flair_text}", inline=False)
+
+        if posts.over_18:
+          embedVar.add_field(name='Marked', value="NSFW", inline=False)
+        
+        if posts.thumbnail and (check_is_valid_image(posts.url) or imgur):
             embedVar.set_image(url=posts.url)
+
         if posts.is_video:
-            embedVar.add_field(name=f'Post by /u/{posts.author}', value="\u200b")
             embedVar.set_video(video=posts.url)
+
         if posts.selftext != '' and len(str(posts.selftext)) <= 1024:
-            embedVar.add_field(name=f'Post by /u/{posts.author}', value=posts.selftext)
+            embedVar.add_field(name='\u200b', value=posts.selftext)
 
         embedVar.set_footer(text=f'👍 {posts.ups} | 👎 {posts.downs}')
         embed_result = await ctx.channel.send(embed = embedVar)                

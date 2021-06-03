@@ -32,13 +32,13 @@ class Kepolisian(commands.Cog):
             await ctx.channel.send('Polisi dan Presiden tidak mungkin masuk penjara bodokkk!')
 
     @commands.command()
-    @commands.has_any_role("Presiden", "Kepolisian")
+    @commands.has_any_role("Presiden", "Satpol PP")
     async def giverole(self, ctx, member: discord.Member, *, role: discord.Role):
         await member.add_roles(role)
         await ctx.channel.send(f"Role '{role}' telah diberikan kepada {member.mention}.")
 
     @commands.command()
-    @commands.has_any_role("Presiden", "Kepolisian")
+    @commands.has_any_role("Presiden", "Satpol PP")
     async def removerole(self, ctx, member: discord.Member, *, role: discord.Role):
         await member.remove_roles(role)
         await ctx.channel.send(f"Role '{role}' telah dihapus dari {member.mention}.")

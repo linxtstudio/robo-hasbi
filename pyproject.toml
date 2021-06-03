@@ -12,6 +12,7 @@ imgurpython = "^1.1.7"
 praw = "^7.1.0"
 prawcore = "^1.5.0"
 flask = "^1.1.2"
+myqr = "^2.3.1"
 
 [tool.poetry.dev-dependencies]
 

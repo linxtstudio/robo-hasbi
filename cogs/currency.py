@@ -88,6 +88,7 @@ class Currency(commands.Cog):
         bal = 0
         if get.status_code == 200:
             bal = get.json()['data']['bal']
+            print(bal)
             x = requests.post(f'{url}/daily', json={'id': id_, 'bal': bal})
             if x.status_code == 200:
                 embed = discord.Embed(title=f"{x.json()['curr']} N$ Get", color=0x00ff00)
