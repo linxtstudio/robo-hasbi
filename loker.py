@@ -11,21 +11,6 @@
 # response = requests.request("GET", url, headers=headers)
 
 # print(response.json())
-
-# import requests
-# import json
-
-# url = "https://instagramdimashirokovv1.p.rapidapi.com/user/loker.programmer"
-
-# headers = {
-#     'x-rapidapi-key': "366f407af5msh652298aab9f275dp14efd1jsn963e160017d3",
-#     'x-rapidapi-host': "InstagramdimashirokovV1.p.rapidapi.com"
-#     }
-
-# response = requests.request("GET", url, headers=headers)
-
-# print(response.json())
-
 import re
 import json
 import sys
