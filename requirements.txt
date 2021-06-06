@@ -1,4 +1,5 @@
 aiohttp==3.6.2
+git+https://github.com/harizMunawar/animec@18fa21c41d0a1686f1f78003fb21f6f10c9bfcbf#egg=animec
 appdirs==1.4.4
 async-timeout==3.0.1
 attrs==20.2.0
