@@ -2,11 +2,16 @@ from discord.ext import commands
 from discord import Embed
 from animec.anicore import Anime
 from animec.anicore import NotFound404
+import re
 
 def wibu_404(context: str):
     not_found_embed = Embed(color=0xff0000)
     not_found_embed.add_field(name=f'{context} yang anda cari tidak dapat ditemukan', value='')
     return not_found_embed
+
+def split_eps(song_list: list):
+    if len(song_list) <= 1: return song_list
+    return [re.split(r"\(([A-Za-z0-9\s-]+){5,}", op)[0] for op in song_list]
 
 class Wibu(commands.Cog):
 
@@ -29,12 +34,14 @@ class Wibu(commands.Cog):
                 anime_embed.add_field(name='Aired', value=anime.aired)
 
                 if anime.opening_themes:
-                    op_inline = '\n'.join(anime.opening_themes)
-                    anime_embed.add_field(name="Opening", value=op_inline, inline=False)
+                    op_list = split_eps(anime.opening_themes)
+                    op_inline = '\n'.join(op_list)
+                    anime_embed.add_field(name="Opening", value=op_inline[0:1024], inline=False)
 
                 if anime.ending_themes:
-                    ed_inline = '\n'.join(anime.ending_themes)
-                    anime_embed.add_field(name="Ending", value=ed_inline, inline=False)
+                    ed_list = split_eps(anime.ending_themes)
+                    ed_inline = '\n'.join(ed_list)
+                    anime_embed.add_field(name="Ending", value=ed_inline[0:1024], inline=False)
 
                 await ctx.send(embed=anime_embed)
         except NotFound404:
