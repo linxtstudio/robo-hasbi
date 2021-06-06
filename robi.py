@@ -43,6 +43,7 @@ async def on_ready():
   channel = bot.get_channel(727873186951200770)
   await channel.send('maaf tadi ketiduran')
   print(f'{bot.user} has connected to Discord!')
+  
 robi_request.wakeup()
 Thread(target=loker.cari_loker).start()
 bot.run(token_utf8.decode('utf-8'), bot=True, reconnect=True)
