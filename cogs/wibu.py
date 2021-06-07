@@ -20,6 +20,8 @@ class Wibu(commands.Cog):
     @commands.command(aliases=['a', 'kartun'])
     async def anime(self, ctx, *, query: str):
         _jikan = AioJikan()
+        while len(query) < 3: query += ' '
+
         async with ctx.typing():
             try:
                 search = await _jikan.search(search_type='anime', query=query)
