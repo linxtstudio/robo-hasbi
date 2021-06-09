@@ -14,12 +14,9 @@ def split_eps(song_list: list):
     return [re.split(r'\(([A-Za-z0-9\s-]+){5,}', op)[0] for op in song_list]
 
 def clean(text: str):
-    if text.__contains__(r'\n'):
-        text = text.replace(r'\n', '')
-    if text.__contains__(r'\r'):
-        text = text.replace(r'\r', '')
-    if text.__contains__(r'\t'):
-        text = text.replace(r'\t', '')
+    text = text if not text.__contains__(r'\n') else text.replace(r'\n', '')
+    text = text if not text.__contains__(r'\t') else text.replace(r'\t', '')
+    text = text if not text.__contains__(r'\r') else text.replace(r'\r', '')
     return text
 
 class Wibu(commands.Cog):
@@ -38,22 +35,21 @@ class Wibu(commands.Cog):
                 anime = await _jikan.anime(id=search['results'][0]['mal_id'])
 
                 title = anime['title_english'] + f" ({anime['title_japanese']})" if anime['title_japanese'] and anime['title_english'] else anime['title']
-                desc = anime['synopsis'] if len(anime['synopsis']) < 1024 else anime['synopsis'][0:1021]+'...'
+                desc = anime['synopsis'] if anime['synopsis'] and len(anime['synopsis']) < 1024 else anime['synopsis'][0:1021]+'...'
+                rank = '#'+str(anime['rank'])
+                popularity = '#'+str(anime['popularity'])
+                genres = ', '.join([genre['name'] for genre in anime['genres']])
 
                 anime_embed = Embed(color=0x00f00, title=title, url=anime['url'])
                 anime_embed.set_thumbnail(url=anime['image_url'])
                 anime_embed.add_field(name='Synopsis', value=desc, inline=False)
                 anime_embed.add_field(name='Episode', value=anime['episodes'])
                 anime_embed.add_field(name='Score', value=anime['score'])
-                anime_embed.add_field(name='Ranking', value=anime['rank'])
-                anime_embed.add_field(name='Popularity', value=anime['popularity'])
+                anime_embed.add_field(name='Ranking', value=rank)
+                anime_embed.add_field(name='Popularity', value=popularity)
                 anime_embed.add_field(name='Rating', value=anime['rating'])
                 anime_embed.add_field(name='Aired', value=anime['aired']['string'])
-
-                if anime['genres']:
-                    genre_list = [genre['name'] for genre in anime['genres']]
-                    genre_inline = ', '.join(genre_list)
-                    anime_embed.add_field(name='Genre', value=genre_inline[0:1024], inline=False)
+                anime_embed.add_field(name='Genre', value=genres, inline=False)
 
                 if anime['opening_themes']:
                     op_list = split_eps([op for op in anime['opening_themes']])
@@ -66,10 +62,10 @@ class Wibu(commands.Cog):
                     anime_embed.add_field(name='Ending', value=ed_inline[0:1024], inline=False)
 
                 result = await ctx.send(embed=anime_embed)
-                result.add_reactions('❗')
             except APIException:
-                await ctx.send(embed=wibu_404('Anime'))
+                result = await ctx.send(embed=wibu_404('Anime'))
             finally:
+                await result.add_reaction('❗')
                 await _jikan.close()
         
     @commands.command(aliases=['c', 'char'])
@@ -96,10 +92,45 @@ class Wibu(commands.Cog):
                 char_embed.add_field(name='Manga', value=manga[0:1024], inline=False)
                 char_embed.add_field(name='Seiyuu', value=seiyuu, inline=False)
 
-                await ctx.send(embed=char_embed)
+                result = await ctx.send(embed=char_embed)
         except APIException:
-            await ctx.send(embed=wibu_404('Karakter'))
+            result = await ctx.send(embed=wibu_404('Karakter'))
         finally:
+            await result.add_reaction('❗')
+            await _jikan.close()
+
+    @commands.command(aliases=['m',])
+    async def manga(self, ctx, *, query: str):
+        _jikan = AioJikan()
+        while len(query) < 3: query += ' '
+
+        try:
+            async with ctx.typing():
+                search = await _jikan.search(search_type='manga', query=query)
+                manga = await _jikan.manga(search['results'][0]['mal_id'])
+                
+                title = manga['title'] + f" ({manga['title_japanese']})" if manga['title_japanese'] else manga['title']
+                synopsis = manga['synopsis'] if manga['synopsis'] and len(manga['synopsis']) < 1024 else manga['synopsis'][0:1021]+'...'
+                rank = '#'+str(manga['rank'])
+                popularity = '#'+str(manga['popularity'])
+                genres = ', '.join([genre['name'] for genre in manga['genres']])
+
+                manga_embed = Embed(title=title, url=manga['url'])
+                manga_embed.set_thumbnail(url=manga['image_url'])
+                manga_embed.add_field(name='Synopsis', value=synopsis, inline=False)
+                manga_embed.add_field(name='Status', value=manga['status'])
+                manga_embed.add_field(name='Total Volumes' if manga['status'] == 'Finished' else 'Latest Volume', value=manga['volumes'])
+                manga_embed.add_field(name='Total Chapters' if manga['status'] == 'Finished' else 'Latest Chapter', value=manga['chapters'])
+                manga_embed.add_field(name='Score', value=manga['score'])
+                manga_embed.add_field(name='Ranking', value=rank)
+                manga_embed.add_field(name='Popularity', value=popularity)
+                manga_embed.add_field(name='Genre', value=genres, inline=False)
+
+                result = await ctx.send(embed=manga_embed)
+        except APIException:
+            result = await ctx.send(embed=wibu_404('Manga'))
+        finally:
+            await result.add_reaction('❗')
             await _jikan.close()
 
 def setup(bot):
