@@ -14,13 +14,9 @@ def split_eps(song_list: list):
     return [re.split(r'\(([A-Za-z0-9\s-]+){5,}', op)[0] for op in song_list]
 
 def clean(text: str):
-    # text = text if not text.__contains__(r'\n') else text.replace(r'\n', '')
-    if text.__contains__(r'\n'):
-        text = text.replace(r'\n', '')
-    if text.__contains__(r'\r'):
-        text = text.replace(r'\r', '')
-    if text.__contains__(r'\t'):
-        text = text.replace(r'\t', '')
+    text = text if not text.__contains__(r'\n') else text.replace(r'\n', '')
+    text = text if not text.__contains__(r'\t') else text.replace(r'\t', '')
+    text = text if not text.__contains__(r'\r') else text.replace(r'\r', '')
     return text
 
 class Wibu(commands.Cog):
