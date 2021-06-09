@@ -66,10 +66,10 @@ class Wibu(commands.Cog):
                     anime_embed.add_field(name='Ending', value=ed_inline[0:1024], inline=False)
 
                 result = await ctx.send(embed=anime_embed)
-                result.add_reactions('❗')
             except APIException:
-                await ctx.send(embed=wibu_404('Anime'))
+                result = await ctx.send(embed=wibu_404('Anime'))
             finally:
+                await result.add_reaction('❗')
                 await _jikan.close()
         
     @commands.command(aliases=['c', 'char'])
@@ -96,10 +96,11 @@ class Wibu(commands.Cog):
                 char_embed.add_field(name='Manga', value=manga[0:1024], inline=False)
                 char_embed.add_field(name='Seiyuu', value=seiyuu, inline=False)
 
-                await ctx.send(embed=char_embed)
+                result = await ctx.send(embed=char_embed)
         except APIException:
-            await ctx.send(embed=wibu_404('Karakter'))
+            result = await ctx.send(embed=wibu_404('Karakter'))
         finally:
+            await result.add_reaction('❗')
             await _jikan.close()
 
 def setup(bot):
