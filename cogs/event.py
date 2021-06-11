@@ -42,15 +42,10 @@ class Event(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user: discord.Member):
-        polisi = discord.utils.get(reaction.message.guild.roles, name="Kepolisian")
-        tahanan = discord.utils.get(reaction.message.guild.roles, name="Tahanan")
-        presiden = discord.utils.get(reaction.message.guild.roles, name="Presiden")
         
         if not user.name == 'Robo-Hasbi' and reaction.message.author.name == 'Robo-Hasbi':            
             if reaction.emoji == '❗':
-                await reaction.message.delete()            
-                
-        # print(f'{user.name} telah mereact {reaction.emoji} \n')
+                await reaction.message.delete()
 
 def setup(bot):
     bot.add_cog(Event(bot))

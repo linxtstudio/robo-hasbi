@@ -1,8 +1,6 @@
 import os
-import discord
 import robi_request
-import loker
-from discord.ext import commands
+from webhooks import loker
 import base64
 from configuration import BotInstance
 from threading import Thread
