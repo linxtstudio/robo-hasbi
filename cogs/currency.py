@@ -17,16 +17,16 @@ class Currency(commands.Cog):
         return Image.open(requests.get(avatar_url, stream=True).raw)
 
     def create_card(self, Id, name, role, avatar_url):
-        image = Image.open(f'{os.path.join(os.getcwd())}/idcard/idcard.png')
+        image = Image.open(f'{os.path.join(os.getcwd())}/media/idcard/idcard.png')
         pp = self.get_avatar(avatar_url)
-        mask = Image.open(f'{os.path.join(os.getcwd())}/idcard/circle.png').convert('L')
+        mask = Image.open(f'{os.path.join(os.getcwd())}/media/idcard/circle.png').convert('L')
 
         pp = pp.resize(mask.size)
         image.paste(pp, (535,886), mask)
 
         draw = ImageDraw.Draw(image)
 
-        font = ImageFont.truetype(f'{os.path.join(os.getcwd())}/idcard/Roboto-Bold.ttf', size=75)
+        font = ImageFont.truetype(f'{os.path.join(os.getcwd())}/media/idcard/Roboto-Bold.ttf', size=75)
 
         (x, y) = (800, 2690)
         color = 'rgb(0, 0, 0)' # black color
