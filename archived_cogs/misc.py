@@ -43,6 +43,10 @@ class Misc(commands.Cog):
             i += 1
         await ctx.channel.send(kode)
 
+    @commands.command()
+    async def wc(self, ctx):
+        await ctx.send(ctx.message.channel.id)
+
 def getData(user: discord.Member):
     userID = str(user.id)
     sql = "SELECT count(name), name FROM data where id='"+userID+"'"
