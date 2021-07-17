@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 from discord import Embed
 from requests.exceptions import HTTPError
+from functools import wraps
 import random
 
 def embed_hentai(code):
@@ -28,7 +29,19 @@ def embed_hentai(code):
     
     embed.set_footer(text=f"Tags: {', '.join(tags)}")
     
-    return embed    
+    return embed
+
+def channel_permission(func):
+    @wraps(func)
+    async def wrapper_func(self, ctx, *args, **kwargs):
+        if not (str(ctx.channel.id) in ['824547064662196234', '727873186951200770']):
+            await ctx.message.delete()
+            await ctx.channel.send('Suttt gaboleh gitu')    
+            return None
+
+        return func(ctx, *args, **kwargs)
+
+    return wrapper_func
 
 class NHentai(commands.Cog):    
     def __init__(self, bot):
@@ -36,11 +49,6 @@ class NHentai(commands.Cog):
 
     @commands.group(aliases=['doujin'])
     async def hentai(self, ctx):
-        if not (str(ctx.channel.id) in ['824547064662196234', '727873186951200770']):
-            await ctx.message.delete()
-            await ctx.channel.send('Suttt gaboleh gitu')    
-            return None
-
         if ctx.invoked_subcommand is None and not ctx.subcommand_passed is None:
             await ctx.send('Invalid hentai command passed...')
         elif ctx.invoked_subcommand is None:
@@ -48,12 +56,14 @@ class NHentai(commands.Cog):
             embedVar = await ctx.channel.send(embed=embed_hentai(id_))
             await embedVar.add_reaction('❗')
                                 
-    @hentai.command(aliases=['nuklir', 'id'])                
+    @hentai.command(aliases=['nuklir', 'id'])
+    @channel_permission
     async def code(self, ctx, nuclear_code):        
         embedVar = await ctx.channel.send(embed=embed_hentai(nuclear_code))
         await embedVar.add_reaction('❗')
 
     @hentai.command(aliases=['tags', 'search_tag'])
+    @channel_permission
     async def tag(self, ctx, *, tag_search):
         choices = [doujin['id'] for doujin in Hentai.search_by_query(f'{tag_search}', sort=Sort.Popular)]
         if choices:
@@ -63,6 +73,7 @@ class NHentai(commands.Cog):
         await embedVar.add_reaction('❗')
 
     @hentai.command(aliases=['parodies', 'anime'])                
+    @channel_permission
     async def parody(self, ctx, *, parodied):
         choices = [doujin['id'] for doujin in Hentai.search_by_query(f'parodies:{parodied}', sort=Sort.Popular)]
         if choices:
@@ -72,6 +83,7 @@ class NHentai(commands.Cog):
         await embedVar.add_reaction('❗')
 
     @hentai.command(aliases=['author', 'writer'])                
+    @channel_permission
     async def artist(self, ctx, *, artist_name):
         choices = [doujin['id'] for doujin in Hentai.search_by_query(f'artist:{artist_name}', sort=Sort.Popular)]
         if choices:
@@ -81,6 +93,7 @@ class NHentai(commands.Cog):
         await embedVar.add_reaction('❗')
 
     @hentai.command(aliases=['char'])                
+    @channel_permission
     async def character(self, ctx, *, char_name):
         choices = [doujin['id'] for doujin in Hentai.search_by_query(f'character:{char_name}', sort=Sort.Popular)]
         if choices:
@@ -90,6 +103,7 @@ class NHentai(commands.Cog):
         await embedVar.add_reaction('❗')
 
     @hentai.command(aliases=['all'])
+    @channel_permission
     async def full(self, ctx, nuclear_code, limit=5):
         doujin = Hentai(nuclear_code)
         pointer = 0
