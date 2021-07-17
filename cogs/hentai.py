@@ -36,6 +36,11 @@ class NHentai(commands.Cog):
 
     @commands.group(aliases=['doujin'])
     async def hentai(self, ctx):
+        if not (str(ctx.channel.id) in ['824547064662196234', '727873186951200770']):
+            await ctx.message.delete()
+            await ctx.channel.send('Suttt gaboleh gitu')    
+            return None
+
         if ctx.invoked_subcommand is None and not ctx.subcommand_passed is None:
             await ctx.send('Invalid hentai command passed...')
         elif ctx.invoked_subcommand is None:
