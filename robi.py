@@ -4,6 +4,7 @@ from webhooks import loker
 import base64
 from configuration import BotInstance
 from threading import Thread
+from discord_message_components import Extension
 
 bot = BotInstance.bot
 token_utf8 = base64.b64decode('TnpJM09EWTJNRFV4TlRVNU1UWXhPVE0yLlh3Tk5BUS5ZSk8wWHlfMHV4MzEyMG5GMURYRml1SVQyLW8=')
@@ -38,6 +39,7 @@ for filename in os.listdir('./cogs'):
 
 @bot.event
 async def on_ready():
+  extension = Extension(bot)
   channel = bot.get_channel(727873186951200770)
   await channel.send('maaf tadi ketiduran')
   print(f'{bot.user} has connected to Discord!')
