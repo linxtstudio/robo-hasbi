@@ -4,7 +4,7 @@ from discord import Embed
 import requests
 import re
 import asyncio
-from configuration import BotInstance
+from discord_message_components import Extension, Button
 
 def get_readable_int(amount):
     orig = amount
@@ -45,10 +45,8 @@ def embed_countries(batch: int):
         embed = Embed(title="Parameter Page Salah")
         return embed
 
-bot = BotInstance.bot
-
 class Corona(commands.Cog):
-
+    
     def __init__(self, bot):
         self.bot = bot    
 
@@ -64,22 +62,42 @@ class Corona(commands.Cog):
     @corona.command(aliases=['country', 'list'])
     async def negara(self, ctx, page=1):        
         page = page
-        countries = await ctx.channel.send(embed=embed_countries(page))
-
-        for emoji in ('⬅️','➡️'):
-            await countries.add_reaction(emoji)        
-
+        countries = await ctx.channel.send(
+            embed=embed_countries(page),
+            components=[
+                Button('prev', 'Previous Page', 'blurple'),
+                Button('next', 'Next Page', 'blurple'),
+            ])   
+        
         try:
             while True:
-                reaction, user = await bot.wait_for('reaction_add', timeout=60, check=lambda reaction, user: (reaction.emoji == '⬅️' or reaction.emoji == '➡️') and user.name != 'Robo-Hasbi')
-                if reaction.emoji == '➡️':
-                    if page < 9: page = page + 1
-                    await countries.edit(embed=embed_countries(page))
-                elif reaction.emoji == '⬅️':
-                    if page > 1: page = page - 1
-                    await countries.edit(embed=embed_countries(page))
+
+                if page == 1:
+                    await countries.edit(components=[
+                        Button('prev', 'Previous Page', 'blurple', disabled=True),
+                        Button('next', 'Next Page', 'blurple', disabled=False),
+                    ])
+                elif page == 9:
+                    await countries.edit(components=[
+                        Button('prev', 'Previous Page', 'blurple', disabled=False),
+                        Button('next', 'Next Page', 'blurple', disabled=True),
+                    ])
+                else:
+                    await countries.edit(components=[
+                        Button('prev', 'Previous Page', 'blurple', disabled=False),
+                        Button('next', 'Next Page', 'blurple', disabled=False),
+                    ])
+                
+                btn = await countries.wait_for(self.bot, 'button', timeout=60)
+                await btn.respond(ninja_mode=True)
+                if btn.custom_id == 'prev': page = page - 1
+                if btn.custom_id == 'next': page = page + 1
+                await countries.edit(embed=embed_countries(page))
         except asyncio.TimeoutError:
-            pass
+            await countries.edit(components=[
+                Button('prev', 'Previous Page', 'blurple', disabled=True),
+                Button('next', 'Next Page', 'blurple', disabled=True),
+            ])
         
 
     @corona.command()

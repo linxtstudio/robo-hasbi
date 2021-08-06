@@ -3,8 +3,7 @@ from discord.ext import commands
 from discord import Embed
 from prawcore import exceptions
 import base64
-
-bot = commands.Bot('!')
+from discord_message_components import Button
 
 class RedditClient:
     id_utf8 = base64.b64decode('bDEyRlBLVndGa2RuQmc=')
@@ -52,9 +51,7 @@ class Reddit(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=['r'])
-    async def reddit(self, ctx, subreddit_search, *, submission_search=""):        
-        reddit_client = RedditClient.reddit_client
+    async def get_post(subreddit_search, submission_search, reddit_client):
         nsfw = nsfw_check(submission_search)
         posts = search_submission(reddit_client, subreddit_search, submission_search)
         iteration = 0
@@ -69,10 +66,10 @@ class Reddit(commands.Cog):
         embedVar.set_author(name=f'Post by /u/{posts.author}', url=f'https://www.reddit.com/user/{posts.author}')
 
         if posts.link_flair_text:
-          embedVar.add_field(name='Flair', value=f"{posts.link_flair_text}", inline=False)
+            embedVar.add_field(name='Flair', value=f"{posts.link_flair_text}", inline=False)
 
         if posts.over_18:
-          embedVar.add_field(name='Marked', value="NSFW", inline=False)
+            embedVar.add_field(name='Marked', value="NSFW", inline=False)
         
         if posts.thumbnail and (check_is_valid_image(posts.url) or imgur):
             embedVar.set_image(url=posts.url)
@@ -84,8 +81,30 @@ class Reddit(commands.Cog):
             embedVar.add_field(name='\u200b', value=posts.selftext)
 
         embedVar.set_footer(text=f'👍 {posts.ups} | 👎 {posts.downs}')
-        embed_result = await ctx.channel.send(embed = embedVar)                
-        await embed_result.add_reaction('❗')     
+        return embedVar
+
+    @commands.command(aliases=['r'])
+    async def reddit(self, ctx, subreddit_search, *, submission_search=""):
+        async with ctx.typing():
+            reddit_client = RedditClient.reddit_client
+            reddit = await ctx.channel.send(
+                embed = self.get_post(subreddit_search, submission_search, reddit_client),
+                components = [
+                    Button('reinvoke', 'Search Ini Lagi', 'green', ':mag_right:' )
+                ])
+            try:
+                while True:
+                    btn = await reddit.wait_for(self.bot, 'button', timeout=60)
+                    await btn.respond(ninja_mode=True)
+
+                    if btn.custom_id == 'reinvoke':
+                        reddit.edit(
+                            embed = self.get_post(subreddit_search, submission_search, reddit_client),
+                            components = [
+                                Button('reinvoke', 'Search Ini Lagi', 'green', ':mag_right:' )
+                            ])
+            except TimeoutError:
+                pass            
 
     @reddit.error
     async def reddit_error(self, ctx, error):
