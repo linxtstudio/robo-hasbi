@@ -1,5 +1,9 @@
-import discord
 from discord.ext import commands
+from discord import Member
+from discord_message_components import PressedButton, ResponseMessage
+from configuration import BotInstance
+
+bot = BotInstance.bot
 
 class Event(commands.Cog):
     def __init__(self, bot):
@@ -41,11 +45,16 @@ class Event(commands.Cog):
         raise error
 
     @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user: discord.Member):
+    async def on_reaction_add(self, reaction, user: Member):
         
         if not user.name == 'Robo-Hasbi' and reaction.message.author.name == 'Robo-Hasbi':            
             if reaction.emoji == '❗':
                 await reaction.message.delete()
+
+    @bot.listen('on_button_press')
+    async def on_button(btn: PressedButton, msg: ResponseMessage, **kwargs):
+        if btn.custom_id == 'delete':
+            await msg.delete()
 
 def setup(bot):
     bot.add_cog(Event(bot))

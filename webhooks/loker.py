@@ -27,7 +27,7 @@ from threading import Thread
 # Set TIME_INTERVAL to the time in seconds in between each check for a new post. Example - 1.5, 600 (default=600)
 # Help: https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-set-environment-variables-in-linux/
 
-INSTAGRAM_USERNAME = ['loker.programmer', 'itkarir', 'lowonganit.jkt']
+INSTAGRAM_USERNAME = ['itkarir', 'lowonganit.jkt']
 
 # ----------------------- Do not modify under this line ----------------------- #
 def get_hashtag_json(ig_user):

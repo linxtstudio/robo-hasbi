@@ -132,7 +132,7 @@ class Reddit(commands.Cog):
             embedVar.set_video(video=posts.url)
 
         if posts.selftext != '' and len(str(posts.selftext)) <= 1024:
-            embedVar.add_field(name='\u200b', value=posts.selftext)
+            embedVar.add_field(name='\u200b', value=posts.selftext, inline=False)
 
         embedVar.set_footer(text=f'👍 {posts.ups} | 👎 {posts.downs}')
         return embedVar
@@ -160,13 +160,11 @@ class Reddit(commands.Cog):
                             Button('reinvoke', 'Search Ini Lagi', 'green'),
                             Button('delete', 'Delete', 'red')
                         ])
-                if btn.custom_id == 'delete':
-                    await reddit.delete()
         except asyncio.TimeoutError:
             await reddit.edit(
                 components = [
                     Button('reinvoke', 'Search Ini Lagi', 'green', disabled=True),
-                    Button('delete', 'Delete', 'red', disabled=True)
+                    Button('delete', 'Delete', 'red', disabled=False)
                 ])
 
     @reddit.error
@@ -178,8 +176,8 @@ class Reddit(commands.Cog):
             await ctx.channel.send('Subreddit Gagal Ditemukan atau Tidak Tersedia')
 
         if isinstance(error, commands.CommandInvokeError):
-            if isinstance(error.original, exceptions.Redirect):
-                await ctx.channel.send('Subreddit Gagal Ditemukan atau Tidak Tersedia')
+            if isinstance(error.original, exceptions.Redirect) or isinstance(error.original, IndexError):
+                await ctx.channel.send(embed=Embed(title='Submission Gagal Ditemukan atau Tidak Tersedia', color=0xff0000))
 
         if isinstance(error, commands.CommandOnCooldown): 
             await ctx.channel.send('Cooldown boss, coba lagi setelah {:.2f}s'.format(error.retry_after))
