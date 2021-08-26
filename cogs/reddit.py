@@ -3,10 +3,10 @@ from discord.ext import commands
 from discord import Embed
 from prawcore import exceptions
 import base64
-from discord_message_components import Button
 import asyncio
 import re
 from datetime import datetime
+from discord_ui import Button
 
 class RedditClient:
     id_utf8 = base64.b64decode('bDEyRlBLVndGa2RuQmc=')
@@ -177,7 +177,7 @@ class Reddit(commands.Cog):
                 embed = self.embed_post(post, max_post, current_index),
                 components = [
                     Button(custom_id='previous', color='blurple', emoji='⬅️', disabled=True),
-                    Button('delete', 'Delete', 'red'),
+                    Button(custom_id='delete', label='Delete', color='red'),
                     Button(custom_id='next', color='blurple', emoji='➡️', disabled=False),
                 ])
           

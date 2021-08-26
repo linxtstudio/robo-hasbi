@@ -1,6 +1,5 @@
 from discord.ext import commands
 from discord import Member
-from discord_message_components import PressedButton, ResponseMessage
 from configuration import BotInstance
 
 bot = BotInstance.bot
@@ -52,7 +51,7 @@ class Event(commands.Cog):
                 await reaction.message.delete()
 
     @bot.listen('on_button_press')
-    async def on_button(btn: PressedButton, msg: ResponseMessage, **kwargs):
+    async def on_button(btn, msg, **kwargs):
         if btn.custom_id == 'delete':
             await msg.delete()
 
