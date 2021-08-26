@@ -31,19 +31,6 @@ def embed_hentai(code):
     
     return embed
 
-def channel_permission(func):
-    @wraps(func)
-    async def wrapper_func(*args, **kwargs):
-        ctx = args[1]
-        if not (str(ctx.channel.id) in ['824547064662196234', '727873186951200770']):
-            await ctx.message.delete()
-            await ctx.channel.send('Suttt gaboleh gitu')    
-            return None
-
-        return func(*args, **kwargs)
-
-    return wrapper_func
-
 class NHentai(commands.Cog):    
     def __init__(self, bot):
         self.bot = bot

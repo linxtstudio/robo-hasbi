@@ -188,8 +188,8 @@ class Reddit(commands.Cog):
 
                 if btn.custom_id == 'next':
                     current_index += 1
-                    next_is_last_post = True if current_index >= max_post else False
-                    research = True if max_post != len(history) else False
+                    next_is_last_post = current_index >= max_post
+                    research = (max_post != len(history)) and (current_index == len(history)+1)
 
                     if research:
                         post, posts = self.choose_random(posts)
@@ -212,7 +212,7 @@ class Reddit(commands.Cog):
 
                 if btn.custom_id == 'previous':
                     current_index -= 1
-                    disabled_previous = True if current_index == 1 else False
+                    disabled_previous = current_index == 1
 
                     await reddit.edit(
                         embed = self.embed_post(history[current_index-1], max_post, current_index),
