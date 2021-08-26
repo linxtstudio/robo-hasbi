@@ -11,7 +11,8 @@ click==7.1.2
 colorama==0.4.3
 contextlib2==0.6.0
 discord==1.0.1
-discord.py==1.5.0
+discord-ui==3.3.4
+discord.py==1.7.3
 distlib==0.3.1
 distro==1.4.0
 dnspython==2.0.0
@@ -31,15 +32,17 @@ MarkupSafe==1.1.1
 msgpack==0.6.2
 multidict==4.7.6
 MyQR==2.3.1
-numpy==1.20.3
+numpy==1.19.5
 Pillow==8.2.0
-praw==7.1.0
-prawcore==1.5.0
+pip-autoremove==0.9.1
+praw==7.4.0
+prawcore==2.3.0
 requests==2.24.0
 retrying==1.3.3
 simplejson==3.17.2
 six==1.15.0
 soupsieve==2.2.1
+tflearn==0.5.0
 update-checker==0.18.0
 urllib3==1.25.10
 virtualenv==20.0.31
@@ -47,4 +50,5 @@ webencodings==0.5.1
 webs==0.0.4
 websocket-client==0.57.0
 Werkzeug==1.0.1
+wikipedia==1.4.0
 yarl==1.6.0

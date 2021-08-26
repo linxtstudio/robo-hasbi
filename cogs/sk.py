@@ -1,5 +1,5 @@
 import asyncio
-from discord_message_components import Button
+from discord_ui import Button
 import random
 from discord.ext import commands
 from discord import Embed

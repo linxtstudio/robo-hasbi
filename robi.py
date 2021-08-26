@@ -5,7 +5,6 @@ import base64
 from configuration import BotInstance
 from threading import Thread
 import random
-from discord_components import DiscordComponents, Button, ButtonStyle
 from discord import Game
 
 bot = BotInstance.bot
@@ -38,12 +37,11 @@ async def reload_error(ctx, error):
 for filename in os.listdir('./cogs'):  
   if filename.endswith('.py'):
     bot.load_extension(f'cogs.{filename[:-3]}')
-  # if filename[:-3] in ['sk', 'reddit', 'event']:
+  # if filename[:-3] in ['reddit', 'event']:
   #   bot.load_extension(f'cogs.{filename[:-3]}')
 
 @bot.event
 async def on_ready():
-  DiscordComponents(bot)
   await bot.change_presence(activity=Game(name='Kampung Pa Yusuf'))
   channel = bot.get_channel(727873186951200770)
   pesan_hasbi = [

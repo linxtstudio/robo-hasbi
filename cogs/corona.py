@@ -4,7 +4,7 @@ from discord import Embed
 import requests
 import re
 import asyncio
-from discord_message_components import Extension, Button
+from discord_ui import Button
 
 def get_readable_int(amount):
     orig = amount
