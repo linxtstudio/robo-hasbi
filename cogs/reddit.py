@@ -137,7 +137,7 @@ class Reddit(commands.Cog):
     def embed_post(self, post, max_result, curr_index):
         post.url, imgur = self.check_is_imgur(post.url)
 
-        embedVar = Embed(title=post.title[:1023], url=post.url)
+        embedVar = Embed(title=post.title[:255], url=post.url)
         embedVar.set_author(name=f'Post by /u/{post.author}', url=f'https://www.reddit.com/user/{post.author}')
 
         if post.link_flair_text:

@@ -5,7 +5,7 @@ import base64
 from configuration import BotInstance
 from threading import Thread
 import random
-from discord import Game
+import discord
 
 bot = BotInstance.bot
 token_utf8 = base64.b64decode('TnpJM09EWTJNRFV4TlRVNU1UWXhPVE0yLlh3Tk5BUS5ZSk8wWHlfMHV4MzEyMG5GMURYRml1SVQyLW8=')
@@ -42,7 +42,7 @@ for filename in os.listdir('./cogs'):
 
 @bot.event
 async def on_ready():
-  await bot.change_presence(activity=Game(name='Kampung Pa Yusuf'))
+  await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Walikelas"))
   channel = bot.get_channel(727873186951200770)
   pesan_hasbi = [
     'maaf tadi ketiduran',

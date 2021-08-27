@@ -11,7 +11,6 @@ click==7.1.2
 colorama==0.4.3
 contextlib2==0.6.0
 discord==1.0.1
-discord-ui==3.3.4
 discord.py==1.7.3
 distlib==0.3.1
 distro==1.4.0
