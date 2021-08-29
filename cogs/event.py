@@ -55,5 +55,10 @@ class Event(commands.Cog):
         if btn.custom_id == 'delete':
             await msg.delete()
 
+        if btn.custom_id == 'pin_reddit':
+            message = await msg.channel.fetch_message(msg.id)
+            pinned_channel = bot.get_channel(881566800763056169)
+            await pinned_channel.send(embed=message.embeds[0])
+
 def setup(bot):
     bot.add_cog(Event(bot))

@@ -106,11 +106,11 @@ class Reddit(commands.Cog):
         else:
             posts = subreddit.random_rising(limit=limit if limit else 100)
             if sort == 'hot':
-                posts = subreddit.hot(time_filter=time_filter if time_filter else 'all', limit=limit if limit else 100)
+                posts = subreddit.hot(limit=limit if limit else 100)
             if sort == 'new':
-                posts = subreddit.new(time_filter=time_filter if time_filter else 'all', limit=limit if limit else 100)
+                posts = subreddit.new(limit=limit if limit else 100)
             if sort == 'top':
-                posts = subreddit.top(time_filter=time_filter if time_filter else 'all', limit=limit if limit else 100)
+                posts = subreddit.top(limit=limit if limit else 100)
 
         return [post for post in posts]
 
@@ -160,6 +160,11 @@ class Reddit(commands.Cog):
         embedVar.set_footer(text=f'👍 {post.ups} | 👎 {post.downs} | {max_result} Posts Found | {curr_index}')
         return embedVar
 
+    def append_pin_button(self, component, post):
+      if post.thumbnail and self.is_valid_image(post.url):
+          component.append(Button(custom_id='pin_reddit', color='green', label='Pin'))
+      return component
+
     @commands.command(aliases=['r'])
     async def reddit(self, ctx, subreddit_search, *, submission_search=""):
         async with ctx.typing():
@@ -169,17 +174,18 @@ class Reddit(commands.Cog):
             post, posts = self.choose_random(posts)
             history = [post]
             current_index = 1
+            components = [
+                    Button(custom_id='previous', color='blurple', emoji='⬅️', disabled=True),
+                    Button(custom_id='delete', label='Delete', color='red'),
+                    Button(custom_id='next', color='blurple', emoji='➡️', disabled=max_post<=1),
+                ]
 
             if not post:
                 raise IndexError
 
             reddit = await ctx.channel.send(
                 embed = self.embed_post(post, max_post, current_index),
-                components = [
-                    Button(custom_id='previous', color='blurple', emoji='⬅️', disabled=True),
-                    Button(custom_id='delete', label='Delete', color='red'),
-                    Button(custom_id='next', color='blurple', emoji='➡️', disabled=False),
-                ])
+                components = self.append_pin_button(components, post))
           
         try:
             while True:
@@ -188,47 +194,45 @@ class Reddit(commands.Cog):
 
                 if btn.custom_id == 'next':
                     current_index += 1
-                    next_is_last_post = current_index >= max_post
+                    components = [
+                                Button(custom_id='previous', color='blurple', emoji='⬅️', disabled=False),
+                                Button('delete', 'Delete', 'red'),
+                                Button(custom_id='next', color='blurple', emoji='➡️', disabled=current_index>=max_post),
+                            ]
                     research = (max_post != len(history)) and (current_index == len(history)+1)
 
                     if research:
                         post, posts = self.choose_random(posts)
                         await reddit.edit(
                             embed = self.embed_post(post, max_post, current_index),
-                            components = [
-                                Button(custom_id='previous', color='blurple', emoji='⬅️', disabled=False),
-                                Button('delete', 'Delete', 'red'),
-                                Button(custom_id='next', color='blurple', emoji='➡️', disabled=next_is_last_post),
-                            ])
+                            components = self.append_pin_button(components, post))
                         history.append(post)
                     else:
+                        post = history[current_index-1]
                         await reddit.edit(
-                            embed = self.embed_post(history[current_index-1], max_post, current_index),
-                            components = [
-                                Button(custom_id='previous', color='blurple', emoji='⬅️', disabled=False),
-                                Button('delete', 'Delete', 'red'),
-                                Button(custom_id='next', color='blurple', emoji='➡️', disabled=next_is_last_post),
-                            ])
+                            embed = self.embed_post(post, max_post, current_index),
+                            components = self.append_pin_button(components, history[current_index-1]))
 
                 if btn.custom_id == 'previous':
                     current_index -= 1
-                    disabled_previous = current_index == 1
-
-                    await reddit.edit(
-                        embed = self.embed_post(history[current_index-1], max_post, current_index),
-                        components = [
-                            Button(custom_id='previous', color='blurple', emoji='⬅️', disabled=disabled_previous),
+                    post = history[current_index-1]
+                    components = [
+                            Button(custom_id='previous', color='blurple', emoji='⬅️', disabled=current_index==1),
                             Button('delete', 'Delete', 'red'),
                             Button(custom_id='next', color='blurple', emoji='➡️', disabled=False),
-                        ])
+                        ]
+
+                    await reddit.edit(
+                        embed = self.embed_post(post, max_post, current_index),
+                        components = self.append_pin_button(components, history[current_index-1]))
             
         except asyncio.TimeoutError:
             await reddit.edit(
-                components = [
+                components = self.append_pin_button([
                     Button(custom_id='previous', color='blurple', emoji='⬅️', disabled=True),
                     Button('delete', 'Delete', 'red', disabled=False),
                     Button(custom_id='next', color='blurple', emoji='➡️', disabled=True),
-                ])
+                ], post))
 
     @reddit.error
     async def reddit_error(self, ctx, error):

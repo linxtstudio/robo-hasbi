@@ -62,6 +62,10 @@ history = []
 @bot.event
 async def on_message(message):
   await bot.process_commands(message)
+  
+  if not message.channel == bot.get_channel(727873186951200770):
+    return
+
   gacha = random.choice(range(9))
   repeat = 0
 
