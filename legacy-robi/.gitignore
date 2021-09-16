@@ -1,0 +1,7 @@
+robiconf
+__pycache__
+.vscode
+env
+.replit
+poetry.lock
+pyproject.toml

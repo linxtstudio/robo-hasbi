@@ -1,64 +1,41 @@
+from bot import debug
 from discord.ext import commands
-from discord import Member
-from configuration import BotInstance
-
-bot = BotInstance.bot
+from discord import Activity, ActivityType, Embed, Member
+from discord_ui import Listener
+from helpers import get_pinned_galery_channel, get_bot_dev_channel
+from helpers.ready_message_helper import ReadyMessage
 
 class Event(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.Cog.listener() #Default error handler for a command, you can override it if you need a specific error handler
+    @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            cd = int(error.retry_after)
-            h = 0
-            m = 0
-            h = int(cd/3600)
-            cd = cd%3600
-            if cd != 0 and cd > 60:
-                m = int(cd/60)
-                cd = cd%60
-            
-            if str(ctx.command)  == 'daily': await ctx.channel.send('Anda sudah mengambil jatah hari ini, coba lagi setelah `{}h {}m {}s`'.format(h, m, cd)) 
-            else: await ctx.channel.send('Cooldown boss, coba lagi setelah {:.2f}s'.format(error.retry_after)) 
-             
-        if isinstance(error, commands.CommandNotFound):
-            await ctx.channel.send('Gaada command itu, ketik !help untuk melihat daftar lengkap command')  
+        if hasattr(ctx.command, 'on_error'):
+            return
 
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.channel.send('Kesalahan Penggunaan Command.\n```!help <namacommand>```')
-
-        if isinstance(error, commands.MissingRole):
-            await ctx.channel.send("Kamu gak punya role yang sesuai buat ngejalanin command ini")
-
-        if isinstance(error, commands.MissingAnyRole):
-            await ctx.channel.send("Kamu gak punya role yang sesuai buat ngejalanin command ini")
-
-        if isinstance(error, commands.BadArgument):
-            await ctx.channel.send("Kesalahan Penggunaan Command.\n```!help <namacommand>```")
-
-        if isinstance(error, commands.CommandInvokeError):
-            await ctx.channel.send("Terjadi kesalahan saat mengeksekusi command 😭😭")
+        if debug:
+            await ctx.send(embed=Embed(title=error, color=0xff0000))
 
         raise error
 
-    @commands.Cog.listener()
+    @commands.Cog.listener('on_reaction_add')
     async def on_reaction_add(self, reaction, user: Member):
-        
-        if not user.name == 'Robo-Hasbi' and reaction.message.author.name == 'Robo-Hasbi':            
-            if reaction.emoji == '❗':
-                await reaction.message.delete()
+        pass
 
-    @bot.listen('on_button_press')
-    async def on_button(btn, msg, **kwargs):
+    @commands.Cog.listener('on_button_press')
+    async def on_button(self, btn, **kwargs):
         if btn.custom_id == 'delete':
-            await msg.delete()
+            await btn.message.delete()
 
-        if btn.custom_id == 'pin_reddit':
-            message = await msg.channel.fetch_message(msg.id)
-            pinned_channel = bot.get_channel(881566800763056169)
-            await pinned_channel.send(embed=message.embeds[0])
+    @commands.Cog.listener()
+    async def on_ready(self):
+        channel = get_bot_dev_channel(self.bot)
+        
+        await self.bot.change_presence(activity=Activity(type=ActivityType.listening, name="Walikelas"))
+        await channel.send(ReadyMessage('storage/ready_message.json').get_random())
+        print(f'{self.bot.user} has connected to Discord!')
+
 
 def setup(bot):
     bot.add_cog(Event(bot))
