@@ -1,5 +1,21 @@
+# import requests
+# import json
+
+# url = "https://instagramdimashirokovv1.p.rapidapi.com/user/loker.programmer"
+
+# headers = {
+#     'x-rapidapi-key': "366f407af5msh652298aab9f275dp14efd1jsn963e160017d3",
+#     'x-rapidapi-host': "InstagramdimashirokovV1.p.rapidapi.com"
+#     }
+
+# response = requests.request("GET", url, headers=headers)
+
+# print(response.json())
+import re
 import json
+import sys
 import requests
+import urllib.request
 import os
 import time
 from threading import Thread
@@ -63,9 +79,10 @@ def webhook(webhook_url, html, INSTAGRAM_USERNAME):
         get_last_publication_url(html)+"/"
     embed["description"] = get_description_photo(html)
     embed["image"] = {"url":get_last_thumb_url(html)} # unmark to post bigger image
-    # embed["thumbnail"] = {"url": get_last_thumb_url(html)}    
+    # embed["thumbnail"] = {"url": get_last_thumb_url(html)}
     data["embeds"].append(embed)
-    result = requests.post(webhook_url, data=json.dumps(data), headers={"Content-Type": "application/json"})
+    result = requests.post(webhook_url, data=json.dumps(
+        data), headers={"Content-Type": "application/json"})
     try:
         result.raise_for_status()
     except requests.exceptions.HTTPError as err:
@@ -85,9 +102,10 @@ def hashtag_webhook(webhook_url, html, INSTAGRAM_USERNAME):
     embed["url"] = "https://www.instagram.com/p/" + \
         get_hashtag_shortcode(html)+"/"
     embed["description"] = get_hashtag_caption(html)
-    embed["image"] = {"url":get_hashtag_thumbnail_src(html)}
+    embed["image"] = {"url":get_hashtag_thumbnail_src(html)} # unmark to post bigger image
     data["embeds"].append(embed)
-    result = requests.post(webhook_url, data=json.dumps(data), headers={"Content-Type": "application/json"})
+    result = requests.post(webhook_url, data=json.dumps(
+        data), headers={"Content-Type": "application/json"})
     try:
         result.raise_for_status()
     except requests.exceptions.HTTPError as err:
@@ -101,7 +119,8 @@ def get_instagram_html(INSTAGRAM_USERNAME):
         "Host": "www.instagram.com",
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"
     }
-    html = requests.get("https://www.instagram.com/" + INSTAGRAM_USERNAME + "/feed/?__a=1", headers=headers)
+    html = requests.get("https://www.instagram.com/" +
+                        INSTAGRAM_USERNAME + "/feed/?__a=1", headers=headers)
     # html = requests.get("https://www.instagram.com/tags/" +
     #                     INSTAGRAM_USERNAME, headers=headers)
     return html
@@ -110,11 +129,14 @@ def get_instagram_html(INSTAGRAM_USERNAME):
 def main(ig_user, is_first_run):
     try:
         html = get_instagram_html(ig_user)
-        if os.environ.get(f"LAST_IMAGE_ID_{ig_user}") != get_last_publication_url(html):
+        if(os.environ.get(f"LAST_IMAGE_ID_{ig_user}") == get_last_publication_url(html)):
+            print("Not new image to post in discord.")
+        else:
             os.environ[f"LAST_IMAGE_ID_{ig_user}"] = get_last_publication_url(html)
             print("New image to post in discord.")
             if not is_first_run:
-              webhook('https://discord.com/api/webhooks/845531517857169419/iS1F5dkGBZtXNWvMW3FmgQjUoG7mwed0sdFAzS0JeMU1FvftVDrhK2JUYNI30sGSv91v', html, ig_user)
+              webhook('https://discord.com/api/webhooks/845531517857169419/iS1F5dkGBZtXNWvMW3FmgQjUoG7mwed0sdFAzS0JeMU1FvftVDrhK2JUYNI30sGSv91v',
+                      html, ig_user)
     except Exception as e:
         print(e)
 
