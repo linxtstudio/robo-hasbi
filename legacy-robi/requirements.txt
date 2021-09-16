@@ -25,7 +25,7 @@ imgurpython==1.1.7
 ipaddr==2.2.0
 itsdangerous==1.1.0
 jikanpy==4.3.2
-Jinja2==2.11.2
+Jinja2==2.11.3
 lockfile==0.12.2
 MarkupSafe==1.1.1
 msgpack==0.6.2
