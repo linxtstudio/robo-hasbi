@@ -30,7 +30,7 @@ saucenao-api==2.4.0
 six==1.16.0
 typing-extensions==3.10.0.2
 update-checker==0.18.0
-urllib3==1.25.11
+urllib3==1.26.5
 Werkzeug==2.0.1
 yarl==1.6.3
 zipp==3.5.0
