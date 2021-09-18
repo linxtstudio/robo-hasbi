@@ -33,9 +33,10 @@ class Aki(commands.Cog):
                 embed, components = wrapper.generate_embed(question=question, disable_components=False)
                 await game.edit(embed=embed, components=components)
         except TimeoutError as e:
-            embed = wrapper.generate_timedout_embed(stopped_early=str(e)=='Player stopped the game')
+            message = 'Kamu menekan tombol stop' if str(e)=='Player stopped the game' else 'Hasbi terlalu lelah menunggu jawaban kamu'
+            embed = wrapper.generate_error_embed(message=message)
         except AkiNoQuestions:
-            embed = wrapper.generate_final_embed(win=False, message='Udah gak punya pertanyaan lagi maaf, kamu menang deh')
+            embed = wrapper.generate_error_embed(message='Udah gak punya pertanyaan lagi maaf, kamu menang deh')
 
         async with ctx.typing():
             if aki.progression >= 80:

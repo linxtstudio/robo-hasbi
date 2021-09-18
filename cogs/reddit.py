@@ -1,4 +1,6 @@
 from asyncio import TimeoutError
+from asyncprawcore.exceptions import Redirect, ServerError
+from discord import Embed
 from discord.ext import commands
 from discord.errors import NotFound
 from helpers.reddit_helpers import RedditWrapper
@@ -40,6 +42,26 @@ class Reddit(commands.Cog):
         except NotFound:
             pass
 
+    @reddit.error
+    async def reddit_error(self, ctx, error):
+        embed = Embed(color=0xff0000, title='Terjadi Kesalahan Saat Menjalankan Command Reddit')
+        error = error.original if hasattr(error, 'original') else error
+
+        if isinstance(error, commands.MissingRequiredArgument):
+            embed.add_field(name='\u200b', value='Kesalahan Penggunan Command.\n > !reddit <namasubreddit> <optional:submissionsearch>')
+
+        if isinstance(error, Redirect):
+            embed.add_field(name='\u200b', value='Subreddit Gagal Ditemukan atau Tidak Tersedia')
+
+        if isinstance(error, IndexError):
+            embed.add_field(name='\u200b', value='Submission Gagal Ditemukan atau Tidak Tersedia')
+
+        if isinstance(error, ServerError):
+            pass
+
+        embed.set_footer(text=error)
+        
+        return await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Reddit(bot))
