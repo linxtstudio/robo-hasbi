@@ -32,6 +32,7 @@ class Sauce(commands.Cog):
         max_index = len(results)
         embed, components = self.client.generate_embed(results[page-1], max_index, page)
         sauce = await ctx.send(embed=embed, components=components)
+        await lobby.delete()
 
         try:
             while True:

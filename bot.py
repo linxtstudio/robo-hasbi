@@ -12,14 +12,10 @@ token_utf8 = b64decode('TnpJM09EWTJNRFV4TlRVNU1UWXhPVE0yLlh3Tk5BUS5ZSk8wWHlfMHV4
 debug = True
 
 if __name__ == '__main__':
-    if not debug:
-        for filename in listdir('./cogs'):  
-            if filename.endswith('.py'):
-                try: hasbi.load_extension(f'cogs.{filename[:-3]}')
-                except: pass
-
-    hasbi.load_extension('cogs.sauce')
-    hasbi.load_extension('cogs.setting')
+    for filename in listdir('./cogs'):  
+        if filename.endswith('.py'):
+            try: hasbi.load_extension(f'cogs.{filename[:-3]}')
+            except: pass
 
     # A handy tools that gonna help us later
     hasbi.add_command(loadall)
