@@ -28,18 +28,8 @@ class AkinatorWrapper():
 
         return embed, components
 
-    def generate_timedout_embed(self, stopped_early: bool=False):
-        message = 'Kamu menekan tombol stop' if stopped_early else 'Hasbi terlalu lelah menunggu jawaban kamu'
+    def generate_error_embed(self, message: str=''):
         embed = Embed(color=0xff0000, title='Hasbi Menebak Karakter')
         embed.add_field(name='Permainan Dihentikan', value=message)
-
-        return embed
-
-    def generate_final_embed(self, win :bool=True, message: str=''):
-        embed = Embed(color=0x00ff00, title='Hasbi Menebak Karakter')
-        if win:
-            embed.add_field(name='\u200b', value='Tentu saja Hasbi tidak pernah salah')
-        else:
-            embed.add_field(name='Hasbi Menyerah', value=message)
 
         return embed
