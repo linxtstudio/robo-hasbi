@@ -1,4 +1,4 @@
-from discord import Embed
+from discord import Embed, channel
 from discord.ext.commands import Bot, Context, command
 from os import listdir
 import json
@@ -17,13 +17,15 @@ def load_setting_file():
 
 def get_pinned_galery_channel(bot: Bot):
     data = load_setting_file()
-    channel = bot.get_channel(data['pinned-gallery-channel'])
-    return channel
+    return bot.get_channel(data['pinned-gallery-channel'])
 
 def get_bot_dev_channel(bot: Bot):
     data = load_setting_file()
-    channel = bot.get_channel(data['bot-dev-channel'])
-    return channel
+    return bot.get_channel(data['bot-dev-channel'])
+
+def get_anonymous_channel(bot: Bot):
+    data = load_setting_file()
+    return bot.get_channel(data['anonymous-channel'])
 
 @command(name='loadall')
 async def loadall(ctx: Context):
