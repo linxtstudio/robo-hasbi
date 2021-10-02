@@ -1,4 +1,4 @@
-from discord import Embed, channel
+from discord import Embed
 from discord.ext.commands import Bot, Context, command
 from os import listdir
 import json
