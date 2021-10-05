@@ -2,7 +2,7 @@ from bot import debug
 from discord.ext import commands
 from discord import Activity, ActivityType, Embed, Member
 from discord_ui import Listener
-from helpers import get_pinned_galery_channel, get_bot_dev_channel
+from helpers import get_bot_dev_channel
 from helpers.ready_message_helper import ReadyMessage
 
 class Event(commands.Cog):
@@ -11,6 +11,7 @@ class Event(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
+        error = error.original if hasattr(error, 'original') else error
         if hasattr(ctx.command, 'on_error'):
             return
 
