@@ -7,6 +7,7 @@ from operator import itemgetter
 from random import randint
 import json
 import re
+import requests
 
 class SambungKataPlayer:
     def __init__(self):
@@ -58,22 +59,24 @@ class SambungKataPlayer:
         _player = self.get_player(player)
         _player['roll'] -= 1 if _player['roll'] > 0 else 0
 
-class SambungKataHelper(SambungKataPlayer):
+
+class KBBIServiceWrapper:
+    url = 'https://kbbi-service.digibitstudio.repl.co/api/'
+
     def __init__(self, cookie_path: str='storage/kuki_kbbi.json', word_list_path: str='storage/kata-dasar-indonesia.txt'):
         super().__init__()
         self.cookie_path = cookie_path
         self.word_list_path = word_list_path
         self.words = []
-        self.current_word = ''
-        self.started = False
         self.auth_kbbi = self.login_kbbi()
 
     def fetch_all_words(self):
         with open(self.word_list_path, 'r') as file:
             for line in file:
                 line = line.strip('\n')
-                pos = re.findall(r'\(.*?\)', line)
-                self.words.append(line.replace(str(pos[0]), '').rstrip().lower())
+                self.words.append(line.rstrip())
+                # pos = re.findall(r'\(.*?\)', line)
+                # self.words.append(line.replace(str(pos[0]), '').rstrip().lower())
 
         return self.words
 
@@ -103,6 +106,85 @@ class SambungKataHelper(SambungKataPlayer):
         except:
             return None
 
+    def get_last_syllable(self, word):
+        kata = word['entri'][0]['nama']
+
+        return kata.split('.')[-1]
+
+    def get_name(self, kbbi_word):
+        base = self.get_pronounciation(kbbi_word)
+        return base.replace('.', '')
+
+    def get_pronounciation(self, kbbi_word):
+        return kbbi_word['entri'][0]['nama']
+
+    def get_makna(self, kbbi_word):
+        return [entri['makna'] for entri in kbbi_word['entri']]
+
+    def get_base_word(self, kbbi_word):
+        return kbbi_word['entri'][0]['kata_dasar'] or ''
+
+    def insert_word(self, kbbi_word, **kwargs):
+        name = self.get_name(kbbi_word)
+        pronounciation = self.get_pronounciation(kbbi_word)
+        base_word = self.get_base_word(kbbi_word)
+
+        mutation = '''
+        mutation($input: WordInput!){
+            createWord(input: $input){
+                word{
+                    id
+                }
+                code
+            }
+        }
+        '''
+        variables = {
+            'input': {'name': name, 'pronounciation': pronounciation, 'baseWord': base_word}
+        }
+
+        response = requests.post(url=self.url, json={'query': mutation, 'variables': variables})
+        data = json.loads(response.text)
+
+        return int(data['data']['createWord']['word']['id'])
+
+    def insert_meaning(self, kbbi_word, word_id):
+        entri = kbbi_word['entri']
+        meaning_count = 0
+        
+        for data in entri:
+            for makna in data['makna']:
+                submakna = ', '.join(makna['submakna'])
+                list_pos = []
+                for pos in makna['kelas']:
+                    list_pos.append({'code': pos['kode'], 'verbose': pos['nama'], 'description': pos['deskripsi']})
+
+                mutation =   '''
+                mutation($input: MeaningInput!){
+                    createMeaning(input: $input){
+                        meaning{
+                            id
+                        }
+                        code
+                    }
+                }
+                '''
+                variables = {
+                    'input': {'word': word_id, 'meaning': submakna, 'pos': list_pos}
+                }
+
+                response = requests.post(url=self.url, json={'query': mutation, 'variables': variables})
+                meaning_count += 1
+
+        return meaning_count
+
+class SambungKataHelper(SambungKataPlayer, KBBIServiceWrapper):
+    def __init__(self, cookie_path: str='storage/kuki_kbbi.json', word_list_path: str='storage/kata-dasar-indonesia.txt'):
+        SambungKataPlayer.__init__(self)
+        KBBIServiceWrapper.__init__(self, cookie_path=cookie_path, word_list_path=word_list_path)
+        self.current_word = ''
+        self.started = False
+
     def check_start_game(self):
         self.started =  len(self.players) > 1 and ((self.hasbi_playing and len(self.players)-1 == len(self.ready)) or (len(self.players) == len(self.ready)))
 
@@ -117,11 +199,6 @@ class SambungKataHelper(SambungKataPlayer):
                     raise ZeroRollException
 
         return self.get_random_words()
-
-    def get_last_syllable(self, word):
-        kata = word['entri'][0]['nama']
-
-        return kata.split('.')[-1]
 
     def answer(self, word):
         self.add_point(self.get_active_player()['player'], len(word))
@@ -202,3 +279,4 @@ class SambungKataHelper(SambungKataPlayer):
 
         for data in sorted_data:
             if self.get_word_from_kbbi(data['word']): return self.answer(data['word'])
+

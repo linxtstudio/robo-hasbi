@@ -1,6 +1,6 @@
 from discord.ext import commands
 from helpers.exceptions import NotEnoughPlayerException, ZeroRollException
-from helpers.sambung_kata_helpers import SambungKataHelper
+from helpers.sambung_kata_helpers import KBBIServiceWrapper, SambungKataHelper
 from helpers.kbbi import TidakDitemukan
 from random import shuffle
 
@@ -76,6 +76,33 @@ class SambungKata(commands.Cog):
                 round = await ctx.send(embed=embed)
         except TimeoutError:
             await ctx.send('kelamaan mikir')
+
+    @commands.command(aliases=['ins'])
+    async def insert(self, ctx, start: int, end: int):
+        if not ctx.author.name == 'Munawar':
+            return await ctx.send('Cicing')
+
+        kbbi = KBBIServiceWrapper()
+
+        words = kbbi.fetch_all_words()
+        await ctx.send(words[start-1:end])
+
+        word_counter = 0
+        meaning_counter = 0
+
+        async with ctx.typing():
+            for word in words[start-1:end]:
+                kbbi_word = kbbi.get_word_from_kbbi(word)
+                if not kbbi_word: continue
+
+                word_id = kbbi.insert_word(kbbi_word)
+                meaning_count = kbbi.insert_meaning(kbbi_word, word_id)
+
+                word_counter += 1
+                meaning_counter += meaning_count
+
+                if not word_counter % 10:
+                    await ctx.send(f'{word_counter} word(s) and {meaning_counter} word\'s meaning have been inserted')
 
 def setup(bot):
     bot.add_cog(SambungKata(bot))
