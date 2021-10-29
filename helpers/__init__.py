@@ -27,6 +27,14 @@ def get_anonymous_channel(bot: Bot):
     data = load_setting_file()
     return bot.get_channel(data['anonymous-channel'])
 
+def get_ruang_pribadi_channel(bot: Bot):
+    data = load_setting_file()
+    return bot.get_channel(data['ruang-pribadi-channel'])
+
+def get_auto_voice_category(bot: Bot):
+    data = load_setting_file()
+    return bot.get_channel(data['auto-voice-category'])
+
 @command(name='loadall')
 async def loadall(ctx: Context):
     async with ctx.typing():

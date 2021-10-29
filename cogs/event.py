@@ -1,8 +1,7 @@
 from bot import debug
 from discord.ext import commands
-from discord import Activity, ActivityType, Embed, Member
-from discord_ui import Listener
-from helpers import get_bot_dev_channel
+from discord import Activity, ActivityType, Embed, Member, CategoryChannel
+from helpers import get_auto_voice_category, get_bot_dev_channel, get_ruang_pribadi_channel
 from helpers.ready_message_helper import ReadyMessage
 
 class Event(commands.Cog):
@@ -37,6 +36,21 @@ class Event(commands.Cog):
         await channel.send(ReadyMessage('storage/ready_message.json').get_random())
         print(f'{self.bot.user} has connected to Discord!')
 
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member, before, after):
+        bot_dev_channel = get_bot_dev_channel(self.bot)
+        ruang_pribadi_channel = get_ruang_pribadi_channel(self.bot)
+        auto_voice_category = get_auto_voice_category(self.bot)
+
+        if after.channel == ruang_pribadi_channel:
+            new_channel_name = f'Ruang Rapat {member.name}'
+            new_channel = await member.guild.create_voice_channel(new_channel_name, category=auto_voice_category)
+            await member.move_to(new_channel)
+
+            def check(a,b,c):
+                return len(new_channel.members) == 0
+            await self.bot.wait_for('voice_state_update', check=check)
+            await new_channel.delete()
 
 def setup(bot):
     bot.add_cog(Event(bot))
