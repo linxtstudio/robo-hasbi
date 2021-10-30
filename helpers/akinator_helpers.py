@@ -1,4 +1,3 @@
-from typing import Union
 from discord import Embed
 from discord_ui import Button
 from random import randint
@@ -22,14 +21,14 @@ class AkinatorWrapper():
         embed = Embed(color=randint(0, 0xffffff), title='Hasbi Menebak Karakter')
         if guessing:
             embed.add_field(name=guess['name'], value=guess['description'])
-            embed.set_image(url=guess['absolute_picture_path'])
+            embed.set_thumbnail(url=guess['absolute_picture_path'])
         else:
-            embed.add_field(name='\u200b', value=question.title())
+            embed.description = question.title()
 
         return embed, components
 
     def generate_error_embed(self, message: str=''):
-        embed = Embed(color=0xff0000, title='Hasbi Menebak Karakter')
-        embed.add_field(name='Permainan Dihentikan', value=message)
+        embed = Embed(color=0xd62929, title='Hasbi Menebak Karakter')
+        embed.add_field(name='❌  Permainan Dihentikan', value=message)
 
         return embed

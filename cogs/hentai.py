@@ -62,7 +62,7 @@ class NHentai(commands.Cog):
             try:
                 doujin = Hentai(code)
             except HTTPError:
-                return Embed(title=f'Doujin dengan code {code} tidak ada', color=0xff0000)
+                return UI.error_embed(f'Doujin dengan code {code} tidak ada')
 
             pages = [image for image in doujin.image_urls]
             curr_index = 1
