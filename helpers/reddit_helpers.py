@@ -75,22 +75,22 @@ class RedditWrapper():
 
     def generate_embed(self, post: Submission, max_index: int, curr_index: int, disable_components: bool=False):
         components = [
-            Button(custom_id='reddit_first', color='blurple', emoji=UI.first_arrow, disabled=curr_index==1 or disable_components),
+            Button(custom_id='reddit_first', color='grey', emoji=UI.first_arrow, disabled=curr_index==1 or disable_components),
             Button(custom_id='reddit_prev', color='blurple', emoji=UI.previous_arrow, disabled=curr_index==1 or disable_components),
             Button(custom_id='delete', color='red', label='Delete', disabled=False),
             Button(custom_id='reddit_next', color='blurple', emoji=UI.next_arrow, disabled=max_index==1 or (curr_index==max_index) or disable_components),
-            Button(custom_id='reddit_last', color='blurple', emoji=UI.last_arrow, disabled=max_index==1 or (curr_index==max_index) or disable_components),
+            Button(custom_id='reddit_last', color='grey', emoji=UI.last_arrow, disabled=max_index==1 or (curr_index==max_index) or disable_components),
         ]
 
-        embed = Embed(title=post.title[:255], url=post.url, color=randint(0, 0xffffff))
-        embed.set_author(name=f'Posted by /u/{post.author} on {self.parse_utc(post.created_utc)}', url=f'https://www.reddit.com/user/{post.author}')
+        embed = Embed(title=post.title[:255], url=post.url, color=0xff4500)
+        embed.set_author(name=f'Posted by /u/{post.author} on {self.parse_utc(post.created_utc)}',icon_url="https://cdn2.iconfinder.com/data/icons/metro-ui-icon-set/512/Reddit.png", url=f'https://www.reddit.com/user/{post.author}')
 
-        if post.link_flair_text: embed.add_field(name='Flair', value=f"{post.link_flair_text}", inline=True)
-        if post.over_18: embed.add_field(name='Marked', value="NSFW", inline=True)
+        if post.link_flair_text: embed.add_field(name='🏷️ Flair', value=f"{post.link_flair_text}", inline=True)
+        if post.over_18: embed.add_field(name='🏷️ Marked', value="NSFW", inline=True)
         if post.thumbnail and self.is_valid_image(post.url):embed.set_image(url=post.url)
         if post.is_video: embed.add_field(name='Video URL', value=post.url, inline=False)
-        if post.selftext: embed.add_field(name='\u200b', value=post.selftext[:1024], inline=False)
+        if post.selftext: embed.description = f'{post.selftext[:1024]}\n'
 
-        embed.set_footer(text=f'👍 {post.ups} | 👎 {post.downs} | {max_index} Posts Found | {curr_index}')
+        embed.set_footer(text=f'👍{post.ups} ─── {curr_index} of {max_index} posts')
 
         return embed, components

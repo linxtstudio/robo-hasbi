@@ -44,22 +44,22 @@ class Reddit(commands.Cog):
 
     @reddit.error
     async def reddit_error(self, ctx, error):
-        embed = Embed(color=0xff0000, title='Terjadi Kesalahan Saat Menjalankan Command Reddit')
+        embed = Embed(color=0xd62929, title='Terjadi Kesalahan Saat Menjalankan Command Reddit')
         error = error.original if hasattr(error, 'original') else error
 
         if isinstance(error, commands.MissingRequiredArgument):
-            embed.add_field(name='\u200b', value='Kesalahan Penggunan Command.\n > !reddit <namasubreddit> <optional:submissionsearch>')
+            embed.description = 'Kesalahan Penggunan Command.\n `!reddit <namasubreddit> <optional:submissionsearch>`'
 
         if isinstance(error, Redirect):
-            embed.add_field(name='\u200b', value='Subreddit Gagal Ditemukan atau Tidak Tersedia')
+            embed.description = 'Subreddit gagal ditemukan atau tidak tersedia'
 
         if isinstance(error, IndexError):
-            embed.add_field(name='\u200b', value='Submission Gagal Ditemukan atau Tidak Tersedia')
+            embed.description = 'Submission gagal ditemukan atau tidak tersedia'
 
         if isinstance(error, ServerError):
             pass
 
-        embed.set_footer(text=error)
+        embed.set_footer(text=f'❌  {error}')
         
         return await ctx.send(embed=embed)
 

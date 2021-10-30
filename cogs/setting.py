@@ -34,7 +34,9 @@ class Settings(commands.Cog):
     @reload.error
     async def loader_error(self, ctx, error):
         await ctx.message.add_reaction('👎')
-        await ctx.send(embed=Embed(title=error.original, color=0xff0000))
+        error_embed=Embed(color=0xd62929)
+        error_embed.set_author(name=f"❌  {error.original}")
+        await ctx.send(embed=error_embed)
 
     @commands.group(aliases=['rm'])
     async def readymessage(self, ctx):

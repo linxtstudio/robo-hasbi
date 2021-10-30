@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import Activity, ActivityType, Embed, Member, CategoryChannel
 from helpers import get_auto_voice_category, get_bot_dev_channel, get_ruang_pribadi_channel
 from helpers.ready_message_helper import ReadyMessage
+from helpers.ui import UI
 
 class Event(commands.Cog):
     def __init__(self, bot):
@@ -15,7 +16,7 @@ class Event(commands.Cog):
             return
 
         if debug:
-            await ctx.send(embed=Embed(title=error, color=0xff0000))
+            await ctx.send(embed=UI.error_embed(error))
 
         raise error
 
@@ -32,7 +33,7 @@ class Event(commands.Cog):
     async def on_ready(self):
         channel = get_bot_dev_channel(self.bot)
         
-        await self.bot.change_presence(activity=Activity(type=ActivityType.listening, name="Walikelas"))
+        await self.bot.change_presence(activity=Activity(type=ActivityType.watching, name="Pemandangan Jogja"))
         await channel.send(ReadyMessage('storage/ready_message.json').get_random())
         print(f'{self.bot.user} has connected to Discord!')
 
