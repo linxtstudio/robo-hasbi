@@ -18,7 +18,7 @@ class PrivateCommands(commands.Cog):
             koku_embed = Embed(color=randint(0, 0xffffff))
             koku_embed.add_field(name='Kokuhaku', value=kokuhaku)
             await channel.send(embed=koku_embed)
-            await ctx.send(embed=UI.success_embed("Kokuhaku kamu sudah dikirim secara anonymous"))
+            await ctx.send(embed=UI.success_embed('Kokuhaku kamu sudah dikirim secara anonymous'))
 
 
 def setup(bot):

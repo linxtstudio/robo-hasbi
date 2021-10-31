@@ -2,7 +2,7 @@ from bot import debug
 from discord.ext import commands
 from discord import Activity, ActivityType, Embed, Member, CategoryChannel
 from helpers import get_auto_voice_category, get_bot_dev_channel, get_ruang_pribadi_channel
-from helpers.ready_message_helper import ReadyMessage
+from helpers.ready_message_helpers import ReadyMessage
 from helpers.ui import UI
 
 class Event(commands.Cog):
@@ -20,12 +20,8 @@ class Event(commands.Cog):
 
         raise error
 
-    @commands.Cog.listener('on_reaction_add')
-    async def on_reaction_add(self, reaction, user: Member):
-        pass
-
-    @commands.Cog.listener('on_button_press')
-    async def on_button(self, btn, **kwargs):
+    @commands.Cog.listener()
+    async def on_button_press(self, btn, **kwargs):
         if btn.custom_id == 'delete':
             await btn.message.delete()
 
@@ -39,7 +35,6 @@ class Event(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        bot_dev_channel = get_bot_dev_channel(self.bot)
         ruang_pribadi_channel = get_ruang_pribadi_channel(self.bot)
         auto_voice_category = get_auto_voice_category(self.bot)
 
@@ -48,9 +43,7 @@ class Event(commands.Cog):
             new_channel = await member.guild.create_voice_channel(new_channel_name, category=auto_voice_category)
             await member.move_to(new_channel)
 
-            def check(a,b,c):
-                return len(new_channel.members) == 0
-            await self.bot.wait_for('voice_state_update', check=check)
+            await self.bot.wait_for('voice_state_update', check=lambda a, b, c: not bool(len(new_channel.members)))
             await new_channel.delete()
 
 def setup(bot):

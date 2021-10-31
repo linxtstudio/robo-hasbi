@@ -6,7 +6,6 @@ from os import path
 from operator import itemgetter
 from random import randint
 import json
-import re
 import requests
 
 class SambungKataPlayer:
@@ -177,6 +176,7 @@ class KBBIServiceWrapper:
                 meaning_count += 1
 
         return meaning_count
+
 
 class SambungKataHelper(SambungKataPlayer, KBBIServiceWrapper):
     def __init__(self, cookie_path: str='storage/kuki_kbbi.json', word_list_path: str='storage/kata-dasar-indonesia.txt'):

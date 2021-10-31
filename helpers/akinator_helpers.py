@@ -4,12 +4,19 @@ from random import randint
 
 class AkinatorWrapper():
     def generate_embed(self, question: str="", guess=None, guessing: bool=False, disable_components: bool=False):
+        embed = Embed(color=randint(0, 0xffffff), title='Hasbi Menebak Karakter')
+
         if guessing:
+            embed.add_field(name=guess['name'], value=guess['description'])
+            embed.set_thumbnail(url=guess['absolute_picture_path'])
+
             components = [
                 Button(custom_id='aki_benar', label='Benar', color='green', disabled=disable_components),
                 Button(custom_id='aki_salah', label='Salah', color='red', disabled=disable_components)
             ]
         else:
+            embed.description = question.title()
+
             components = [
                 Button(custom_id='aki_yes', label='Ya', color='green', disabled=disable_components),
                 Button(custom_id='aki_maybe', label='Mungkin', color='blurple', disabled=disable_components),
@@ -17,13 +24,6 @@ class AkinatorWrapper():
                 Button(custom_id='aki_no', label='Tidak', color='red', disabled=disable_components),
                 Button(custom_id='aki_stop', label='Stop', color='red', disabled=disable_components),
             ]
-
-        embed = Embed(color=randint(0, 0xffffff), title='Hasbi Menebak Karakter')
-        if guessing:
-            embed.add_field(name=guess['name'], value=guess['description'])
-            embed.set_thumbnail(url=guess['absolute_picture_path'])
-        else:
-            embed.description = question.title()
 
         return embed, components
 

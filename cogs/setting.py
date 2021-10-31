@@ -1,7 +1,7 @@
 from asyncio import TimeoutError
 from discord import Embed
 from discord.ext import commands
-from helpers.ready_message_helper import ReadyMessage
+from helpers.ready_message_helpers import ReadyMessage
 from random import randint
 
 

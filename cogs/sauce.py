@@ -15,7 +15,8 @@ class Sauce(commands.Cog):
     async def sauce(self, ctx, url: str=''):
         if not url:
             async with ctx.typing():
-                lobby = await ctx.send(embed=Embed(color=randint(0, 0xffffff), title='Hasbi menunggu gambar atau link sebelum bisa memberi sauce'))    
+                lobby = await ctx.send(embed=Embed(color=randint(0, 0xffffff), title='Hasbi menunggu gambar atau link sebelum bisa memberi sauce'))
+
             try:
                 source = await self.bot.wait_for('message', timeout=60, check=lambda message: message.author == ctx.author)
                 url = source.attachments[0].proxy_url if len(source.attachments) > 0 else source.content
