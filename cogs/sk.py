@@ -83,9 +83,7 @@ class SambungKata(commands.Cog):
             return await ctx.send('Cicing')
 
         kbbi = KBBIServiceWrapper()
-
         words = kbbi.fetch_all_words()
-        await ctx.send(words[start-1:end])
 
         word_counter = 0
         meaning_counter = 0

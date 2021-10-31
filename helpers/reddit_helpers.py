@@ -5,7 +5,6 @@ from datetime import datetime
 from discord import Embed
 from discord_ui import Button
 from helpers.ui import UI
-from random import randint
 
 import re
 
@@ -69,9 +68,7 @@ class RedditWrapper():
 
     def is_valid_image(self, url):
         url = str(url)
-        if url.endswith('jpg') or url.endswith('jpeg') or url.endswith('png') or url.endswith('webm') or url.endswith('gif'):
-            return True
-        return False
+        return url.endswith('jpg') or url.endswith('jpeg') or url.endswith('png') or url.endswith('webm') or url.endswith('gif')
 
     def generate_embed(self, post: Submission, max_index: int, curr_index: int, disable_components: bool=False):
         components = [
@@ -85,7 +82,7 @@ class RedditWrapper():
         embed = Embed(title=post.title[:255], url=post.url, color=0xff4500)
         embed.set_author(name=f'Posted by /u/{post.author} on {self.parse_utc(post.created_utc)}',icon_url="https://cdn2.iconfinder.com/data/icons/metro-ui-icon-set/512/Reddit.png", url=f'https://www.reddit.com/user/{post.author}')
 
-        if post.link_flair_text: embed.add_field(name='🏷️ Flair', value=f"{post.link_flair_text}", inline=True)
+        if post.link_flair_text: embed.add_field(name='🏷️ Flair', value=post.link_flair_text, inline=True)
         if post.over_18: embed.add_field(name='🏷️ Marked', value="NSFW", inline=True)
         if post.thumbnail and self.is_valid_image(post.url):embed.set_image(url=post.url)
         if post.is_video: embed.add_field(name='Video URL', value=post.url, inline=False)
