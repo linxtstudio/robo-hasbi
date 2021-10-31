@@ -2,6 +2,7 @@ import json
 import requests
 import os
 import time
+import re
 from threading import Thread
 
 # USAGE:
@@ -11,7 +12,7 @@ from threading import Thread
 # Set TIME_INTERVAL to the time in seconds in between each check for a new post. Example - 1.5, 600 (default=600)
 # Help: https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-set-environment-variables-in-linux/
 
-INSTAGRAM_USERNAME = ['itkarir', 'lowonganit.jkt']
+INSTAGRAM_USERNAME = ['itkarir', 'lowonganit.jkt', 'loker_it', 'lokeritindonesia', 'lokerprogrammerid', 'parttimeindonesia', 'indonesia_freelancer', 'magangbandung']
 
 # ----------------------- Do not modify under this line ----------------------- #
 def get_hashtag_json(ig_user):
@@ -48,7 +49,10 @@ def get_last_thumb_url(html):
 
 
 def get_description_photo(html):
-    return html.json()["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"][0]["node"]["edge_media_to_caption"]["edges"][0]["node"]["text"]
+    raw_text = html.json()["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"][0]["node"]["edge_media_to_caption"]["edges"][0]["node"]["text"]
+    filtered_text = re.sub(r"#(\w+)", "", raw_text, flags=re.IGNORECASE)
+    formatted_text = filtered_text.replace("  ?", "?").replace("  ,", ",")
+    return formatted_text
 
 
 def webhook(webhook_url, html, INSTAGRAM_USERNAME):
@@ -58,9 +62,11 @@ def webhook(webhook_url, html, INSTAGRAM_USERNAME):
     data["embeds"] = []
     embed = {}
     embed["color"] = 15467852
-    embed["title"] = "Halo guys, ada lowongan baru nih dari @"+INSTAGRAM_USERNAME+""
-    embed["url"] = "https://www.instagram.com/p/" + \
-        get_last_publication_url(html)+"/"
+    embed["author"] = {
+        "name": "Halo guys, ada lowongan baru nih dari @"+INSTAGRAM_USERNAME+"",
+        "url": "https://www.instagram.com/p/"+get_last_publication_url(html)+"/",
+        "icon_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/1024px-Instagram_icon.png"
+    }
     embed["description"] = get_description_photo(html)
     embed["image"] = {"url":get_last_thumb_url(html)} # unmark to post bigger image
     # embed["thumbnail"] = {"url": get_last_thumb_url(html)}    
@@ -126,6 +132,6 @@ def cari_loker():
             for ig_user in INSTAGRAM_USERNAME:
                 Thread(target=main, args=(ig_user, is_first_run)).start()
             is_first_run = False
-            time.sleep(float(600)) # 600 = 10 minutes
+            time.sleep(float(1200)) # 1200 = 20 minutes
     else:
         print('Please configure environment variables properly!')
