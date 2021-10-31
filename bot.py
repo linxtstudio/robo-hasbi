@@ -1,4 +1,6 @@
 from base64 import b64decode
+from random import randint
+from discord import Embed
 from discord_ui import UI
 from discord.ext import commands
 from helpers import ping, loadall, unloadall
@@ -11,6 +13,14 @@ ui = UI(client=hasbi)
 token_utf8 = b64decode('TnpJM09EWTJNRFV4TlRVNU1UWXhPVE0yLlh3Tk5BUS5ZSk8wWHlfMHV4MzEyMG5GMURYRml1SVQyLW8=')
 debug = True
 
+class CustomHelp(commands.MinimalHelpCommand):
+    async def send_pages(self):
+        destination = self.get_destination()
+        e = Embed(title="Hasbi", color=randint(0, 0xffffff), description='')
+        for page in self.paginator.pages:
+            e.description += page
+        await destination.send(embed=e)
+
 if __name__ == '__main__':
     for filename in listdir('./cogs'):  
         if filename.endswith('.py'):
@@ -18,6 +28,8 @@ if __name__ == '__main__':
             except: pass
 
     # A handy tools that gonna help us later
+
+    hasbi.help_command = CustomHelp()
     hasbi.add_command(loadall)
     hasbi.add_command(unloadall)
 

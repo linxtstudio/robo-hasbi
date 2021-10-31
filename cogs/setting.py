@@ -4,6 +4,8 @@ from discord.ext import commands
 from helpers.ready_message_helpers import ReadyMessage
 from random import randint
 
+from helpers.ui import UI
+
 
 class Settings(commands.Cog):
     rm = ReadyMessage('storage/ready_message.json')
@@ -19,7 +21,7 @@ class Settings(commands.Cog):
     @commands.command()
     async def unload(self, ctx, extension):
         if extension == 'setting':
-            return await ctx.send(embed=Embed(title='Dilarang unload setting 😠', color=0xff0000))
+            return await ctx.send(embed=UI.error_embed("Dilarang unload setting 😠"))
 
         self.bot.unload_extension(f'cogs.{extension}')
         await ctx.message.add_reaction('👍')
@@ -51,13 +53,13 @@ class Settings(commands.Cog):
     async def add(self, ctx, *, message: str):
         async with ctx.typing():
             self.rm.add(message.title())
-            return await ctx.send(embed=Embed(title='Pesan sudah berhasil ditambahkan', color=0x00ff00))
+            return await ctx.send(embed=UI.success_embed("Pesan sudah berhasil ditambahkan"))
     
     @readymessage.command()
     async def remove(self, ctx, id: int):
         async with ctx.typing():
             self.rm.remove(id)
-            return await ctx.send(embed=Embed(title='Pesan sudah berhasil dihapus', color=0x00ff00))
+            return await ctx.send(embed=UI.success_embed("Pesan sudah berhasil dihapus"))
 
     @readymessage.command(aliases=['list'])
     async def show(self, ctx):
