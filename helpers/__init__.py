@@ -3,6 +3,8 @@ from discord.ext.commands import Bot, Context, command
 from os import listdir
 import json
 
+from helpers.ui import UI
+
 def get_max_page(total: int, batch: int):
     max_page = 1
     for index in range(total):
@@ -43,7 +45,7 @@ async def loadall(ctx: Context):
                 try: ctx.bot.load_extension(f'cogs.{filename[:-3]}')
                 except: pass
         
-    await ctx.send(embed=Embed(color=0x00ff00, title='Semua Cogs Sudah Berhasil Dimuat'))
+    await ctx.send(embed=UI.success_embed("Semua cogs sudah berhasil Dimuat"))
 
 @command(name='unloadall')
 async def unloadall(ctx: Context):
@@ -53,4 +55,4 @@ async def unloadall(ctx: Context):
                 try: ctx.bot.unload_extension(f'cogs.{filename[:-3]}')
                 except: pass
 
-    await ctx.send(embed=Embed(color=0x00ff00, title='Semua Cogs Sudah Berhasil Dilepas'))
+    await ctx.send(embed=UI.success_embed("Semua cogs sudah berhasil dilepas"))
