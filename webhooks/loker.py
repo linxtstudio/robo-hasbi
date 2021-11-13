@@ -68,8 +68,7 @@ def webhook(webhook_url, html, INSTAGRAM_USERNAME):
         "icon_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/1024px-Instagram_icon.png"
     }
     embed["description"] = get_description_photo(html)
-    embed["image"] = {"url":get_last_thumb_url(html)} # unmark to post bigger image
-    # embed["thumbnail"] = {"url": get_last_thumb_url(html)}    
+    embed["image"] = {"url":get_last_thumb_url(html)}
     data["embeds"].append(embed)
     result = requests.post(webhook_url, data=json.dumps(data), headers={"Content-Type": "application/json"})
     try:
@@ -77,8 +76,7 @@ def webhook(webhook_url, html, INSTAGRAM_USERNAME):
     except requests.exceptions.HTTPError as err:
         print(err)
     else:
-        print("Image successfully posted in Discord, code {}.".format(
-            result.status_code))
+        print("Image successfully posted in Discord, code {}.".format(result.status_code))
 
 def hashtag_webhook(webhook_url, html, INSTAGRAM_USERNAME):
     # for all params, see https://discordapp.com/developers/docs/resources/webhook#execute-webhook
@@ -108,8 +106,6 @@ def get_instagram_html(INSTAGRAM_USERNAME):
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"
     }
     html = requests.get("https://www.instagram.com/" + INSTAGRAM_USERNAME + "/feed/?__a=1", headers=headers)
-    # html = requests.get("https://www.instagram.com/tags/" +
-    #                     INSTAGRAM_USERNAME, headers=headers)
     return html
 
 

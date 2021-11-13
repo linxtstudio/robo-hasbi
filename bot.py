@@ -3,10 +3,11 @@ from random import randint
 from discord import Embed
 from discord_ui import UI
 from discord.ext import commands
-from helpers import ping, loadall, unloadall
+from helpers import loadall, unloadall
 from os import listdir
 from threading import Thread
 from webhooks import loker
+import ping
 
 hasbi = commands.Bot('!')
 ui = UI(client=hasbi)
