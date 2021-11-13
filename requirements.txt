@@ -44,3 +44,4 @@ virtualenv==20.7.2
 Werkzeug==2.0.1
 yarl==1.6.3
 zipp==3.5.0
+pixivpy
