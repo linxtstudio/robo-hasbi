@@ -49,29 +49,32 @@ class PixivWrapper:
     def get_image_extension(self, image_url):
         return image_url[-3:]
 
-    def check_image_exists(self, illust_id):
-        list_image = [filename[:-3] for filename in os.listdir(self.PIXIV_STORAGE_PATH)]
-        return str(illust_id) in list_image
+    def check_image_exists(self, illust):
+        # Check whether the image already exists in the media server, then returning the filename if it is. e.g 9876123.jpg
+        resp = requests.get(f'{self.MEDIA_SERVER}/download/{str(illust.id)}.{self.get_image_extension(illust.image_urls.large)}')
+        
+        return f'{str(illust.id)}.{self.get_image_extension(illust.image_urls.large)}' if resp.status_code == 200 else None
+
+    def download_image(self, illust):
+        self.client.download(illust.image_urls.large, path=self.PIXIV_STORAGE_PATH, name=f'{str(illust.id)}.{self.get_image_extension(illust.image_urls.large)}')
+
+    def upload_image(self, image_path):
+        with open(image_path, 'rb') as img:
+            name_img = os.path.basename(image_path)
+            files = {'file': (name_img, img, 'multipart/form-data', {'Expires': '0'}) }
+            with requests.Session() as s:
+                s.post(f'{self.MEDIA_SERVER}/upload?folder=robi-pixiv', files=files)
 
     def save_image(self, illust):
         url = illust.image_urls.large
         filename = f'{str(illust.id)}.{self.get_image_extension(url)}'
-        path_image = f'{self.PIXIV_STORAGE_PATH}/{filename}'
+        image_path = f'{self.PIXIV_STORAGE_PATH}/{filename}'
         
-        # Checking if file with that name already exists in the media server (performance boost)
-        resp = requests.get(f'{self.MEDIA_SERVER}/download/{str(illust.id)}.{self.get_image_extension(url)}')
-        if resp.status_code == 200:
-            return filename
-        
-        # Downloading the image then uploading it to the media server
-        self.client.download(url, path=self.PIXIV_STORAGE_PATH, name=f'{str(illust.id)}.{self.get_image_extension(url)}')
-        with open(path_image, 'rb') as img:
-            name_img = os.path.basename(path_image)
-            files = {'file': (name_img, img, 'multipart/form-data', {'Expires': '0'}) }
-            with requests.Session() as s:
-                r = s.post(f'{self.MEDIA_SERVER}/upload', files=files)
-        
-        os.unlink(path_image)
+        if not self.check_image_exists(illust):
+            self.download_image(illust)
+            self.upload_image(image_path)
+            os.unlink(image_path)
+
         return filename
 
     def generate_embed(self, post, max_index, curr_index, disable_components: bool=False):
@@ -95,7 +98,7 @@ class PixivWrapper:
         embed = Embed(title=post.title[:255], color=0x0045ff)
         embed.set_author(name=f'By {post.user.name[:50]} (@{post.user.account[:50]}) on {post.create_date[:10]}', icon_url='https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Pixiv_Icon.svg/450px-Pixiv_Icon.svg.png', url=f'https://www.pixiv.net/en/users/{post.user.id}')
         embed.add_field(name='Tags', value=', '.join(tags), inline=False)
-        embed.set_image(url=f'{self.MEDIA_SERVER}/download/{filename}')
+        embed.set_image(url=f'{self.MEDIA_SERVER}/download/{filename}?folder=robi-pixiv')
         embed.set_footer(text=f'👁‍🗨{post.total_view} ─── {curr_index} of {max_index} illustration ─── ID: {post.id}')
 
         return embed, components
