@@ -13,6 +13,7 @@ class Pixiv(commands.Cog):
     @commands.command(aliases=['p'])
     async def pixiv(self, ctx, *, search=''):
         async with ctx.typing():
+            self.wrapper.auth()
             if not search:
                 illustrations = [tag['illust'] for tag in self.wrapper.client.trending_tags_illust()['trend_tags']]
             else:

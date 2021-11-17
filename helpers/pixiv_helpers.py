@@ -46,6 +46,10 @@ class PixivWrapper:
         )
         return response.json()
 
+    def auth(self):
+        self.ACCESS_TOKEN = self.refresh(self.REFRESH_TOKEN)['access_token']
+        self.client.set_auth(self.ACCESS_TOKEN, self.REFRESH_TOKEN)
+
     def get_image_extension(self, image_url):
         return image_url[-3:]
 
