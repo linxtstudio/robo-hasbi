@@ -3,6 +3,7 @@ from discord.errors import NotFound
 from discord.ext import commands
 from hentai import Hentai, Sort, Utils
 from hentai.hentai import Format
+from helpers import UI
 from helpers.hentai_helpers import NHentaiHelpers
 from random import shuffle
 from requests.exceptions import HTTPError
@@ -23,7 +24,7 @@ class NHentai(commands.Cog):
     async def random(self, ctx):
         async with ctx.typing():
             doujin = Utils.get_random_hentai()
-            embed, components = self.helpers.generate_list_hentai_embed(doujin, 1, 1, disable_paginator=True)
+            embed, components = self.helpers.generate_list_hentai_embed(doujin, 1, 1, disable_components=True)
 
             await ctx.send(embed=embed, components=components)
 
