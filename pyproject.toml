@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "repl_python3_beta_robo-hasbi"
+name = "robo_hasbi"
 version = "0.1.0"
 description = ""
-authors = ["repl.it user <replituser@example.com>"]
+authors = "Digibit Team"
 
 [tool.poetry.dependencies]
 python = "^3.8"
