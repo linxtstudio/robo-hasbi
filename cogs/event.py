@@ -1,5 +1,5 @@
-from bot import debug
-from discord.ext import commands
+from bot import debug, status
+from discord.ext import commands, tasks
 from discord import Activity, ActivityType, Embed, Member, CategoryChannel
 from helpers import get_auto_voice_category, get_bot_dev_channel, get_ruang_pribadi_channel
 from helpers.ready_message_helpers import ReadyMessage
@@ -8,6 +8,7 @@ from helpers.ui import UI
 class Event(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.change_status.start()
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -45,6 +46,14 @@ class Event(commands.Cog):
 
             await self.bot.wait_for('voice_state_update', check=lambda a, b, c: not bool(len(new_channel.members)))
             await new_channel.delete()
+    
+    @tasks.loop(seconds=30)
+    async def change_status(self):
+        await self.bot.change_presence(activity=Activity(type=ActivityType.watching, name=next(status)))
+    
+    @change_status.before_loop
+    async def before_change_status(self):
+        await self.bot.wait_until_ready()
 
 def setup(bot):
     bot.add_cog(Event(bot))
