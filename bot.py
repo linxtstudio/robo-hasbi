@@ -3,7 +3,7 @@ from random import randint
 from discord import Embed, Activity, ActivityType
 from discord_ui import UI
 from discord.ext import commands
-from helpers import loadall, unloadall
+from helpers import loadall, unloadall, kampung
 from itertools import cycle
 from os import listdir
 from threading import Thread
@@ -34,6 +34,7 @@ if __name__ == '__main__':
     hasbi.help_command = CustomHelp()
     hasbi.add_command(loadall)
     hasbi.add_command(unloadall)
+    hasbi.add_command(kampung)
 
     # Start Threading
     Thread(target=ping.exposed_api).start()
