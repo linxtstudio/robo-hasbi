@@ -1,7 +1,10 @@
 from discord import Embed
-from discord.ext.commands import Bot, Context, command
-from os import listdir
+from discord.ext.commands import Bot, Context, command, has_any_role, MissingAnyRole
+from os import listdir, getenv
+from dotenv import load_dotenv
+load_dotenv()
 import json
+import requests
 
 from helpers.ui import UI
 
@@ -56,3 +59,31 @@ async def unloadall(ctx: Context):
                 except: pass
 
     await ctx.send(embed=UI.success_embed("Semua cogs sudah berhasil dilepas"))
+
+@command(name='kampung')
+@has_any_role(949976437266464788)
+async def kampung(ctx: Context, action):
+    async with ctx.typing():
+        if action == 'start':
+            requests.post('https://api.idcloudhost.com/v1/jkt01/user-resource/vm/start', headers={'apikey': getenv('ID_CLOUD_API_KEY')}, data={'uuid': '4fe69833-9463-48f9-97b4-a194c5cb504e'})
+            return await ctx.send(embed=UI.success_embed("Server Berhasil Nyala"))
+
+        if action == 'stop':
+            requests.post('https://api.idcloudhost.com/v1/jkt01/user-resource/vm/stop', headers={'apikey': getenv('ID_CLOUD_API_KEY')}, data={'uuid': '4fe69833-9463-48f9-97b4-a194c5cb504e'})
+            return await ctx.send(embed=UI.success_embed("Server Berhasil Mati"))
+
+        if action == 'info':
+            resp = requests.get('https://api.idcloudhost.com/v1/jkt01/user-resource/vm', headers={'apikey': getenv('ID_CLOUD_API_KEY')}, data={'uuid': '4fe69833-9463-48f9-97b4-a194c5cb504e'})
+            return await ctx.send(embed=UI.success_embed(f"Server is {resp.json()['status']}"))
+
+@kampung.error
+async def kampung_error(ctx, error):
+    embed = Embed(color=0xd62929, title='Terjadi Kesalahan Saat Menjalankan Command Kampung')
+    error = error.original if hasattr(error, 'original') else error
+
+    if isinstance(error, MissingAnyRole):
+        embed.description = 'Siapa kamu'
+
+    embed.set_footer(text=f'❌  {error}')
+    
+    return await ctx.send(embed=embed)
